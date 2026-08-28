@@ -34,9 +34,19 @@ func ConnectPostgres(cfg *config.Config) (*DB, error) {
 	db.SetConnMaxLifetime(15 * time.Minute)
 	db.SetConnMaxIdleTime(5 * time.Minute)
 
-	// Test connection
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
+	// Test connection with retry loop (useful in container startup)
+	var pingErr error
+	for attempts := 1; attempts <= 15; attempts++ {
+		pingErr = db.Ping()
+		if pingErr == nil {
+			break
+		}
+		log.Printf("[Database] Waiting for PostgreSQL at %s:%s (attempt %d/15)...", cfg.DBHost, cfg.DBPort, attempts)
+		time.Sleep(2 * time.Second)
+	}
+
+	if pingErr != nil {
+		return nil, fmt.Errorf("failed to ping database after 15 attempts: %w", pingErr)
 	}
 
 	log.Printf("[Database] Successfully connected to PostgreSQL (%s:%s/%s)", cfg.DBHost, cfg.DBPort, cfg.DBName)
