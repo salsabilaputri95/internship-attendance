@@ -1,4 +1,10 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const getBaseUrl = (): string => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+  }
+  // Default to relative /api handled by Next.js rewrites proxy
+  return "/api";
+};
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -44,7 +50,10 @@ export const api = {
     }
 
     const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-    const url = `${API_URL}${cleanEndpoint}`;
+    const base = getBaseUrl();
+    const url = base.startsWith("http")
+      ? `${base}${cleanEndpoint}`
+      : `${base}${cleanEndpoint.startsWith("/api") ? cleanEndpoint.replace(/^\/api/, "") : cleanEndpoint}`;
 
     try {
       const response = await fetch(url, {
