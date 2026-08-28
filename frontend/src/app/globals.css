@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --bg-base:      #FFF7ED;
+  --bg-card:      #FFFFFF;
+  --bg-soft:      #FFEDD5;
+  --border:       #FED7AA;
+  --border-mid:   #FDBA74;
+  --orange-pri:   #F97316;
+  --orange-dark:  #EA580C;
+  --orange-deep:  #C2410C;
+  --text-base:    #1C1917;
+  --text-mid:     #57534E;
+  --text-soft:    #A8A29E;
+  --emerald:      #10B981;
+  --amber:        #F59E0B;
+  --red:          #EF4444;
+  --blue:         #3B82F6;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-base);
+  min-height: 100vh;
+}
+
+/* Global scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-soft); }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 99px; }
+
+/* Selection */
+::selection { background: #FED7AA; color: #7C2D12; }
+
+/* Utilities */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 12px 0 rgba(249,115,22,0.06);
+}
+
+.card-hover {
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.card-hover:hover {
+  box-shadow: 0 4px 20px 0 rgba(249,115,22,0.12);
+  border-color: var(--border-mid);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--orange-pri), var(--orange-dark));
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  transition: filter 0.15s, transform 0.12s;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary:active { transform: scale(0.98); }
+
+.input-base {
+  background: var(--bg-base);
+  border: 1.5px solid var(--border);
+  border-radius: 0.75rem;
+  color: var(--text-base);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input-base:focus {
+  outline: none;
+  border-color: var(--orange-pri);
+  box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+}
+
+.badge-hadir   { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+.badge-terlambat { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+.badge-izin    { background: #DBEAFE; color: #1E3A8A; border: 1px solid #BFDBFE; }
+.badge-alpha   { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+.badge-belum   { background: #F5F5F4; color: #57534E; border: 1px solid #E7E5E4; }
