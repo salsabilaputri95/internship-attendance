@@ -1,8 +1,6 @@
 const getBaseUrl = (): string => {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
-  }
-  // Default to relative /api handled by Next.js rewrites proxy
+  // Always use relative /api so requests go through Next.js reverse proxy rewrites
+  // This guarantees 100% compatibility across Ngrok, LAN IP (192.168.x.x), Docker, and Localhost
   return "/api";
 };
 
@@ -51,9 +49,7 @@ export const api = {
 
     const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
     const base = getBaseUrl();
-    const url = base.startsWith("http")
-      ? `${base}${cleanEndpoint}`
-      : `${base}${cleanEndpoint.startsWith("/api") ? cleanEndpoint.replace(/^\/api/, "") : cleanEndpoint}`;
+    const url = `${base}${cleanEndpoint.startsWith("/api") ? cleanEndpoint.replace(/^\/api/, "") : cleanEndpoint}`;
 
     try {
       const response = await fetch(url, {
@@ -67,42 +63,45 @@ export const api = {
         data = text ? JSON.parse(text) : {};
       } catch {
         if (!response.ok) {
-          throw new Error(`Server Error (${response.status}): ${text || response.statusText}`);
+          throw new Error(text || `HTTP error! status: ${response.status}`);
         }
-        data = { success: true, message: text };
+        data = { message: text };
       }
 
       if (!response.ok) {
-        throw new Error(data.message || `Request gagal dengan status ${response.status}`);
+        throw new Error(data.message || data.error || `Request failed with status ${response.status}`);
       }
 
-      return data as ApiResponse<T>;
-    } catch (err: any) {
-      throw new Error(err.message || "Gagal terhubung ke server backend");
+      return data;
+    } catch (error: any) {
+      console.error(`API Error [${endpoint}]:`, error);
+      throw error;
     }
   },
 
-  get<T = any>(endpoint: string) {
-    return this.request<T>(endpoint, { method: "GET" });
+  get<T = any>(endpoint: string, options: RequestInit = {}) {
+    return this.request<T>(endpoint, { ...options, method: "GET" });
   },
 
-  post<T = any>(endpoint: string, body?: any) {
+  post<T = any>(endpoint: string, body?: any, options: RequestInit = {}) {
     const isFormData = body instanceof FormData;
     return this.request<T>(endpoint, {
+      ...options,
       method: "POST",
       body: isFormData ? body : JSON.stringify(body),
     });
   },
 
-  put<T = any>(endpoint: string, body?: any) {
+  put<T = any>(endpoint: string, body?: any, options: RequestInit = {}) {
     const isFormData = body instanceof FormData;
     return this.request<T>(endpoint, {
+      ...options,
       method: "PUT",
       body: isFormData ? body : JSON.stringify(body),
     });
   },
 
-  delete<T = any>(endpoint: string) {
-    return this.request<T>(endpoint, { method: "DELETE" });
+  delete<T = any>(endpoint: string, options: RequestInit = {}) {
+    return this.request<T>(endpoint, { ...options, method: "DELETE" });
   },
 };
