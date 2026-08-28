@@ -171,7 +171,7 @@ export default function MentorDashboardPage() {
           <div className="text-2xl font-black text-amber-600">
             {stats?.terlambat || 0}
           </div>
-          <div className="text-[10px] text-stone-400 font-medium mt-0.5">&gt; 08:15 WITA</div>
+          <div className="text-[10px] text-stone-400 font-medium mt-0.5">&gt; 07:30 WITA</div>
         </div>
 
         <div className="bg-white border border-blue-100 rounded-3xl p-4 shadow-sm">
@@ -182,10 +182,10 @@ export default function MentorDashboardPage() {
           <div className="text-2xl font-black text-blue-600">
             {stats?.izin || 0}
           </div>
-          <div className="text-[10px] text-stone-400 font-medium mt-0.5">Disetujui</div>
+          <div className="text-[10px] text-stone-400 font-medium mt-0.5">Surat Izin / Sakit</div>
         </div>
 
-        <div className="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm col-span-2 sm:col-span-1">
+        <div className="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm">
           <div className="flex items-center justify-between text-stone-500 mb-1">
             <span className="text-[11px] font-bold">Belum Hadir</span>
             <Clock size={14} />
@@ -199,9 +199,9 @@ export default function MentorDashboardPage() {
 
       {/* Monitoring Table Container */}
       <div className="bg-white border border-orange-200/80 rounded-3xl p-5 sm:p-6 shadow-xl shadow-orange-500/5">
-        {/* Table Filters */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-orange-100 mb-5">
-          <div className="relative w-full sm:w-80">
+        {/* Table Filters (Search, Date Picker, Status) */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 pb-5 border-b border-orange-100 mb-5">
+          <div className="relative w-full md:w-72">
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
             <input
               type="text"
@@ -212,19 +212,33 @@ export default function MentorDashboardPage() {
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Filter size={15} className="text-stone-400 shrink-0" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full sm:w-auto bg-orange-50/30 border border-orange-200 rounded-2xl px-3 py-2 text-xs text-stone-700 font-semibold focus:outline-none focus:border-orange-500"
-            >
-              <option value="">Semua Status</option>
-              <option value="HADIR">Hadir</option>
-              <option value="TERLAMBAT">Terlambat</option>
-              <option value="IZIN">Izin</option>
-              <option value="BELUM_HADIR">Belum Hadir</option>
-            </select>
+          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-start sm:justify-end">
+            {/* Tanggal Presensi Filter */}
+            <div className="flex items-center gap-2 bg-orange-50/50 border border-orange-200 rounded-2xl px-3 py-1.5 text-xs text-stone-700">
+              <Calendar size={14} className="text-orange-500 shrink-0" />
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="bg-transparent text-xs text-stone-800 font-bold focus:outline-none cursor-pointer"
+              />
+            </div>
+
+            {/* Status Dropdown */}
+            <div className="flex items-center gap-1.5">
+              <Filter size={14} className="text-stone-400 shrink-0" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="bg-orange-50/50 border border-orange-200 rounded-2xl px-3 py-2 text-xs text-stone-700 font-bold focus:outline-none focus:border-orange-500"
+              >
+                <option value="">Semua Status</option>
+                <option value="HADIR">Hadir</option>
+                <option value="TERLAMBAT">Terlambat</option>
+                <option value="IZIN">Izin</option>
+                <option value="BELUM_HADIR">Belum Hadir</option>
+              </select>
+            </div>
           </div>
         </div>
 

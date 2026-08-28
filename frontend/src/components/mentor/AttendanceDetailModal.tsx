@@ -199,8 +199,8 @@ export function AttendanceDetailModal({
                 : "border-transparent text-stone-500 hover:text-stone-800"
             }`}
           >
-            <ImageIcon size={14} />
-            Bukti & GPS
+            <Clock size={14} />
+            Rincian & GPS
           </button>
           <button
             onClick={() => setTab("correct")}
@@ -253,109 +253,123 @@ export function AttendanceDetailModal({
             </div>
           ) : (
             <>
-              {/* TAB 1: DETAIL, FOTO & GPS */}
+              {/* TAB 1: DETAIL & GPS (Foto Dikomentari Sementara) */}
               {tab === "detail" && (
-                <div className="space-y-5">
-                  {/* Side-by-Side Photos */}
+                <div className="space-y-4">
+                  {/* Side-by-Side Check In & Check Out Details */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Check In Card */}
-                    <div className="bg-orange-50/30 border border-orange-200 rounded-2xl p-4 flex flex-col justify-between">
+                    <div className="bg-emerald-50/40 border border-emerald-200/80 rounded-2xl p-4 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center justify-between text-xs mb-2">
-                          <span className="font-bold text-emerald-700 flex items-center gap-1.5">
-                            <LogIn size={14} />
+                          <span className="font-extrabold text-emerald-800 flex items-center gap-1.5">
+                            <LogIn size={15} className="text-emerald-600" />
                             Absen Masuk
                           </span>
-                          <span className="font-mono font-bold text-stone-900">
-                            {detail.check_in
-                              ? new Date(detail.check_in).toLocaleTimeString("id-ID", {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })
-                              : "--:--"}
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100/80 text-emerald-800 border border-emerald-200">
+                            {detail.check_in ? "Tercatat" : "Belum Absen"}
                           </span>
                         </div>
 
-                        {detail.check_in_photo_url ? (
+                        <div className="text-2xl font-black text-stone-900 font-mono my-2">
+                          {detail.check_in
+                            ? new Date(detail.check_in).toLocaleTimeString("id-ID", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                              }) + " WITA"
+                            : "--:--"}
+                        </div>
+
+                        {/* [KOMENTAR FITUR FOTO]: Foto selfie dinonaktifkan sementara
+                        {detail.check_in_photo_url && (
                           <div
                             onClick={() => setZoomedPhoto(detail.check_in_photo_url!)}
-                            className="relative w-full h-44 rounded-xl overflow-hidden cursor-pointer group bg-black border border-orange-200 shadow-sm"
+                            className="relative w-full h-36 rounded-xl overflow-hidden cursor-pointer group bg-black border border-orange-200 shadow-sm mt-2"
                           >
                             <img
                               src={detail.check_in_photo_url}
                               alt="Selfie Check In"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                             />
-                            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-bold text-white">
-                              Klik untuk perbesar
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="w-full h-44 rounded-xl bg-orange-50/60 border border-dashed border-orange-200 flex flex-col items-center justify-center text-stone-400 gap-1">
-                            <ImageIcon size={24} />
-                            <span className="text-[11px]">Belum ada foto masuk</span>
                           </div>
                         )}
+                        */}
                       </div>
 
                       {detail.check_in && (
-                        <div className="mt-3 pt-3 border-t border-orange-200/80 text-[11px] text-stone-500 flex items-center justify-between">
-                          <span className="flex items-center gap-1">
-                            <MapPin size={12} className="text-orange-500" />
-                            Jarak: {detail.check_in_distance?.toFixed(0)} meter
-                          </span>
-                          <span>Akurasi: ±{detail.check_in_accuracy?.toFixed(0)}m</span>
+                        <div className="mt-3 pt-3 border-t border-emerald-200/80 text-xs text-stone-600 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="flex items-center gap-1 text-stone-500 font-medium">
+                              <MapPin size={13} className="text-emerald-600" />
+                              Jarak ke Kantor:
+                            </span>
+                            <span className="font-bold text-stone-900">
+                              {detail.check_in_distance?.toFixed(0)} meter
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-[11px] text-stone-500">
+                            <span>Akurasi GPS:</span>
+                            <span>±{detail.check_in_accuracy?.toFixed(0)} meter</span>
+                          </div>
                         </div>
                       )}
                     </div>
 
                     {/* Check Out Card */}
-                    <div className="bg-orange-50/30 border border-orange-200 rounded-2xl p-4 flex flex-col justify-between">
+                    <div className="bg-orange-50/40 border border-orange-200/80 rounded-2xl p-4 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center justify-between text-xs mb-2">
-                          <span className="font-bold text-orange-700 flex items-center gap-1.5">
-                            <LogOut size={14} />
+                          <span className="font-extrabold text-orange-800 flex items-center gap-1.5">
+                            <LogOut size={15} className="text-orange-600" />
                             Absen Pulang
                           </span>
-                          <span className="font-mono font-bold text-stone-900">
-                            {detail.check_out
-                              ? new Date(detail.check_out).toLocaleTimeString("id-ID", {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })
-                              : "--:--"}
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100/80 text-orange-800 border border-orange-200">
+                            {detail.check_out ? "Tercatat" : "Belum Absen"}
                           </span>
                         </div>
 
-                        {detail.check_out_photo_url ? (
+                        <div className="text-2xl font-black text-stone-900 font-mono my-2">
+                          {detail.check_out
+                            ? new Date(detail.check_out).toLocaleTimeString("id-ID", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                              }) + " WITA"
+                            : "--:--"}
+                        </div>
+
+                        {/* [KOMENTAR FITUR FOTO]: Foto selfie dinonaktifkan sementara
+                        {detail.check_out_photo_url && (
                           <div
                             onClick={() => setZoomedPhoto(detail.check_out_photo_url!)}
-                            className="relative w-full h-44 rounded-xl overflow-hidden cursor-pointer group bg-black border border-orange-200 shadow-sm"
+                            className="relative w-full h-36 rounded-xl overflow-hidden cursor-pointer group bg-black border border-orange-200 shadow-sm mt-2"
                           >
                             <img
                               src={detail.check_out_photo_url}
                               alt="Selfie Check Out"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                             />
-                            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-bold text-white">
-                              Klik untuk perbesar
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="w-full h-44 rounded-xl bg-orange-50/60 border border-dashed border-orange-200 flex flex-col items-center justify-center text-stone-400 gap-1">
-                            <ImageIcon size={24} />
-                            <span className="text-[11px]">Belum ada foto pulang</span>
                           </div>
                         )}
+                        */}
                       </div>
 
                       {detail.check_out && (
-                        <div className="mt-3 pt-3 border-t border-orange-200/80 text-[11px] text-stone-500 flex items-center justify-between">
-                          <span className="flex items-center gap-1">
-                            <MapPin size={12} className="text-orange-500" />
-                            Jarak: {detail.check_out_distance?.toFixed(0)} meter
-                          </span>
-                          <span>Akurasi: ±{detail.check_out_accuracy?.toFixed(0)}m</span>
+                        <div className="mt-3 pt-3 border-t border-orange-200/80 text-xs text-stone-600 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="flex items-center gap-1 text-stone-500 font-medium">
+                              <MapPin size={13} className="text-orange-600" />
+                              Jarak ke Kantor:
+                            </span>
+                            <span className="font-bold text-stone-900">
+                              {detail.check_out_distance?.toFixed(0)} meter
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-[11px] text-stone-500">
+                            <span>Akurasi GPS:</span>
+                            <span>±{detail.check_out_accuracy?.toFixed(0)} meter</span>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -363,9 +377,14 @@ export function AttendanceDetailModal({
 
                   {/* Notes info */}
                   {detail.notes && (
-                    <div className="bg-orange-50/40 border border-orange-200 rounded-2xl p-3.5 text-xs text-stone-700">
-                      <span className="text-stone-500 font-bold">Catatan Peserta: </span>
-                      &ldquo;{detail.notes}&rdquo;
+                    <div className="bg-amber-50/60 border border-amber-200 rounded-2xl p-4 text-xs text-stone-800">
+                      <div className="text-amber-800 font-bold mb-1 flex items-center gap-1.5">
+                        <AlertCircle size={14} className="text-amber-600" />
+                        Catatan / Alasan Peserta:
+                      </div>
+                      <p className="text-stone-700 italic bg-white/70 p-2.5 rounded-xl border border-amber-200/60">
+                        &ldquo;{detail.notes}&rdquo;
+                      </p>
                     </div>
                   )}
                 </div>
