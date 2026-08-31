@@ -44,7 +44,7 @@ export function LeaveModal({ isOpen, onClose, onSuccess }: LeaveModalProps) {
           setReason("");
           onSuccess();
           onClose();
-        }, 1500);
+        }, 1200);
       } else {
         throw new Error(res.message || "Gagal mengajukan izin");
       }
@@ -56,48 +56,48 @@ export function LeaveModal({ isOpen, onClose, onSuccess }: LeaveModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white border border-orange-200 rounded-3xl p-6 shadow-2xl text-stone-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xl text-slate-900">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-orange-100 mb-4">
+        <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 mb-4">
           <div>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-700 border border-blue-200">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
               Form Izin
             </span>
-            <h2 className="text-base font-extrabold text-stone-900 mt-1">
+            <h2 className="text-sm font-bold text-slate-900 mt-1">
               Pengajuan Izin / Keterangan
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-stone-400 hover:text-stone-700 hover:bg-orange-50 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
         {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 rounded-2xl p-3 text-xs text-red-700 flex items-center gap-2">
-            <AlertCircle size={16} className="text-red-500 shrink-0" />
+          <div className="mb-3.5 bg-rose-50 border border-rose-200/80 rounded-xl p-2.5 text-xs text-rose-700 flex items-center gap-2">
+            <AlertCircle size={15} className="text-rose-500 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {isSuccess ? (
-          <div className="py-8 flex flex-col items-center justify-center gap-3 text-center animate-in zoom-in-95">
-            <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 border-2 border-emerald-200 flex items-center justify-center shadow-lg">
-              <CheckCircle2 size={32} />
+          <div className="py-6 flex flex-col items-center justify-center gap-2.5 text-center animate-in zoom-in-95">
+            <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-2xs">
+              <CheckCircle2 size={24} />
             </div>
-            <h3 className="text-base font-black text-stone-900">Izin Berhasil Dicatat!</h3>
-            <p className="text-xs text-stone-600">
-              Status kehadiran Anda hari ini telah diperbarui menjadi <strong>IZIN</strong>.
+            <h3 className="text-sm font-bold text-slate-900">Izin Berhasil Dicatat!</h3>
+            <p className="text-xs text-slate-500">
+              Status kehadiran hari ini telah diperbarui menjadi <strong>IZIN</strong>.
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5 flex items-center gap-1.5">
-                <Calendar size={13} className="text-orange-500" />
+              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+                <Calendar size={13} className="text-indigo-600" />
                 Tanggal Izin
               </label>
               <input
@@ -105,18 +105,18 @@ export function LeaveModal({ isOpen, onClose, onSuccess }: LeaveModalProps) {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full bg-orange-50/30 border border-orange-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-900 focus:outline-none focus:border-orange-500 font-semibold"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 font-medium transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Kategori Izin
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-orange-50/30 border border-orange-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 font-semibold focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium focus:outline-none focus:bg-white focus:border-indigo-500 transition-all cursor-pointer"
               >
                 <option value="Sakit">Sakit / Berobat</option>
                 <option value="Urusan Kampus/Akademik">Urusan Kampus / Bimbingan Skripsi / Ujian</option>
@@ -127,17 +127,17 @@ export function LeaveModal({ isOpen, onClose, onSuccess }: LeaveModalProps) {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5 flex items-center gap-1.5">
-                <FileText size={13} className="text-orange-500" />
-                Alasan &amp; Keterangan <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+                <FileText size={13} className="text-indigo-600" />
+                Alasan &amp; Keterangan <span className="text-rose-500">*</span>
               </label>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="Contoh: Mengikuti ujian proposal skripsi di kampus Universitas Hasanuddin..."
+                placeholder="Contoh: Mengikuti ujian skripsi di kampus..."
                 rows={3}
                 required
-                className="w-full bg-orange-50/30 border border-orange-200 rounded-xl p-3 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all"
               />
             </div>
 
@@ -145,17 +145,17 @@ export function LeaveModal({ isOpen, onClose, onSuccess }: LeaveModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-colors"
+                className="py-2 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-semibold transition-colors border border-slate-200"
               >
                 Batal
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold text-xs flex items-center gap-2 shadow-md shadow-orange-500/20 transition-all disabled:opacity-50"
+                className="py-2 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-all disabled:opacity-50"
               >
-                <Send size={14} />
-                <span>{submitting ? "Mengirim..." : "Kirim Pengajuan Izin"}</span>
+                <Send size={13} />
+                <span>{submitting ? "Mengirim..." : "Kirim Pengajuan"}</span>
               </button>
             </div>
           </form>

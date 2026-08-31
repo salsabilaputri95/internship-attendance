@@ -78,7 +78,6 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      // Combine major and position for seamless display across all views
       const payload = {
         name: formData.name.trim(),
         email: formData.email.trim(),
@@ -106,41 +105,41 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-6">
-      <div className="w-full max-w-lg">
-        {/* Branding Card Header */}
+    <div className="min-h-[80vh] flex items-center justify-center py-8">
+      <div className="w-full max-w-md">
+        {/* Branding Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white p-1.5 border border-orange-200/80 shadow-lg shadow-orange-500/10 mb-3">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white p-2 border border-slate-200 shadow-2xs mb-3">
             <img
               src="/logo.webp"
               alt="Logo BPS Jeneponto"
               className="w-full h-full object-contain"
             />
           </div>
-          <h1 className="text-2xl font-black text-stone-900 tracking-tight">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
             Pendaftaran Peserta Magang
           </h1>
-          <p className="text-xs text-orange-600 font-bold mt-1">
-            Buat akun baru untuk mulai melakukan presensi di BPS Jeneponto
+          <p className="text-xs text-slate-500 font-medium mt-0.5">
+            Buat akun untuk mencatat presensi kehadiran
           </p>
         </div>
 
         {/* Register Box */}
-        <div className="bg-white border border-orange-200/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-orange-500/5">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-7 shadow-xs">
           {error && (
-            <div className="mb-5 bg-red-50 border border-red-200 rounded-2xl p-3.5 flex items-center gap-3 text-red-700 text-xs animate-in fade-in">
-              <AlertCircle size={16} className="text-red-500 shrink-0" />
+            <div className="mb-4 bg-rose-50 border border-rose-200/80 rounded-xl p-3 flex items-center gap-2.5 text-rose-700 text-xs animate-in fade-in">
+              <AlertCircle size={15} className="text-rose-500 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1">
-                Nama Lengkap <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Nama Lengkap <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
-                <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   name="name"
@@ -148,18 +147,18 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   placeholder="Contoh: Salsabila Putri"
                   required
-                  className="w-full bg-orange-50/30 border border-orange-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 font-medium"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium transition-all"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
-                  Alamat Email <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Alamat Email <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                  <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="email"
                     name="email"
@@ -167,17 +166,17 @@ export default function RegisterPage() {
                     onChange={handleChange}
                     placeholder="nama@email.com"
                     required
-                    className="w-full bg-orange-50/30 border border-orange-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 font-medium"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
-                  Kata Sandi <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Kata Sandi <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                  <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="password"
                     name="password"
@@ -186,7 +185,7 @@ export default function RegisterPage() {
                     placeholder="Min. 6 karakter"
                     required
                     minLength={6}
-                    className="w-full bg-orange-50/30 border border-orange-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 font-medium"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium transition-all"
                   />
                 </div>
               </div>
@@ -194,11 +193,11 @@ export default function RegisterPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
-                  Universitas / Sekolah <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Universitas / Sekolah <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <School size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                  <School size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     name="university"
@@ -206,17 +205,17 @@ export default function RegisterPage() {
                     onChange={handleChange}
                     placeholder="Contoh: Univ Hasanuddin"
                     required
-                    className="w-full bg-orange-50/30 border border-orange-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 font-medium"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
-                  Jurusan / Program Studi <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Jurusan / Prodi <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <BookOpen size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                  <BookOpen size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     name="major"
@@ -224,7 +223,7 @@ export default function RegisterPage() {
                     onChange={handleChange}
                     placeholder="Contoh: Sistem Informasi"
                     required
-                    className="w-full bg-orange-50/30 border border-orange-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 font-medium"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium transition-all"
                   />
                 </div>
               </div>
@@ -232,9 +231,9 @@ export default function RegisterPage() {
 
             {/* Posisi Magang Dropdown */}
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center gap-1.5">
-                <Briefcase size={13} className="text-orange-500" />
-                <span>Posisi / Penempatan Magang</span> <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+                <Briefcase size={13} className="text-indigo-600" />
+                <span>Posisi / Penempatan Magang</span> <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <select
@@ -242,7 +241,7 @@ export default function RegisterPage() {
                   value={formData.position}
                   onChange={handleChange}
                   required
-                  className="w-full bg-orange-50/30 border border-orange-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-900 font-semibold focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 appearance-none cursor-pointer"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 appearance-none cursor-pointer transition-all"
                 >
                   {POSISI_OPTIONS.map((pos) => (
                     <option key={pos} value={pos}>
@@ -250,25 +249,25 @@ export default function RegisterPage() {
                     </option>
                   ))}
                 </select>
-                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400 text-[10px]">
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px]">
                   ▼
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Nomor WhatsApp / HP
               </label>
               <div className="relative">
-                <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="081234567890"
-                  className="w-full bg-orange-50/30 border border-orange-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 font-medium"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium transition-all"
                 />
               </div>
             </div>
@@ -276,7 +275,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 transition-all disabled:opacity-50"
+              className="w-full mt-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-all disabled:opacity-50 active:scale-[0.99]"
             >
               {loading ? (
                 <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
@@ -289,13 +288,13 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          {/* Back to Login Link */}
-          <div className="mt-5 pt-5 border-t border-orange-100 text-center">
-            <p className="text-xs text-stone-600">
+          {/* Back to Login */}
+          <div className="mt-5 pt-5 border-t border-slate-100 text-center">
+            <p className="text-xs text-slate-500">
               Sudah memiliki akun?{" "}
               <Link
                 href="/login"
-                className="font-extrabold text-orange-600 hover:text-orange-700 hover:underline"
+                className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
               >
                 Masuk di sini
               </Link>

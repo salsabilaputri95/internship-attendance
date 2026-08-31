@@ -14,7 +14,6 @@ import {
   Download,
   Menu,
   X,
-  User as UserIcon,
 } from "lucide-react";
 
 export function Navbar() {
@@ -22,7 +21,6 @@ export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Close mobile menu when pathname changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
@@ -46,11 +44,11 @@ export function Navbar() {
   const currentNavLinks = isMentor ? mentorNavLinks : internNavLinks;
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-orange-200/80 text-stone-800 shadow-sm">
+    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 text-slate-900 shadow-2xs">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand */}
         <Link href={isMentor ? "/mentor" : "/dashboard"} className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-md shadow-orange-500/10 group-hover:scale-105 transition-transform flex items-center justify-center bg-white p-1 border border-orange-200/80">
+          <div className="w-9 h-9 rounded-xl overflow-hidden group-hover:scale-105 transition-transform flex items-center justify-center bg-white p-1 border border-slate-200 shadow-2xs">
             <img
               src="/logo.webp"
               alt="Logo BPS Jeneponto"
@@ -58,15 +56,15 @@ export function Navbar() {
             />
           </div>
           <div>
-            <h1 className="text-sm font-extrabold text-stone-900 leading-tight">
+            <h1 className="text-sm font-bold text-slate-900 leading-tight">
               BPS Jeneponto
             </h1>
-            <p className="text-[11px] text-orange-600 font-bold">Presensi Magang</p>
+            <p className="text-[11px] text-slate-500 font-medium">Presensi Magang</p>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1.5 bg-orange-50/80 p-1 rounded-2xl border border-orange-200/60">
+        <nav className="hidden md:flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200/70">
           {currentNavLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -74,68 +72,68 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   isActive
-                    ? "bg-orange-500 text-white shadow-sm shadow-orange-500/25"
-                    : "text-stone-600 hover:text-orange-600 hover:bg-orange-100/60"
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                 }`}
               >
-                <Icon size={14} />
+                <Icon size={14} className={isActive ? "text-indigo-600" : "text-slate-500"} />
                 {link.label}
               </Link>
             );
           })}
         </nav>
 
-        {/* Desktop User Info & Logout Button */}
+        {/* Desktop User Info & Logout */}
         <div className="hidden md:flex items-center gap-3">
           <div className="text-right">
-            <div className="text-xs font-bold text-stone-900">{user.name}</div>
-            <div className="text-[10px] text-orange-600 uppercase tracking-wider font-extrabold">
-              {isMentor ? "Mentor / Pembimbing" : "Peserta Magang"}
+            <div className="text-xs font-bold text-slate-900">{user.name}</div>
+            <div className="text-[10px] text-indigo-600 uppercase tracking-wider font-semibold">
+              {isMentor ? "Mentor" : "Peserta Magang"}
             </div>
           </div>
 
           <button
             onClick={logout}
-            className="p-2 rounded-xl bg-orange-50 hover:bg-red-50 text-stone-600 hover:text-red-500 border border-orange-200/80 transition-colors"
+            className="p-2 rounded-xl bg-slate-100/80 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200/80 transition-colors"
             title="Keluar"
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
 
-        {/* Mobile Hamburger Menu Button (Replaces logout icon on mobile) */}
+        {/* Mobile Hamburger Button */}
         <div className="flex md:hidden items-center">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2.5 rounded-xl bg-orange-50/80 hover:bg-orange-100 text-stone-700 hover:text-orange-600 border border-orange-200/80 transition-all active:scale-95 shadow-xs"
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 border border-slate-200 transition-all active:scale-95 shadow-2xs"
             aria-label="Menu Navigasi"
           >
-            {mobileMenuOpen ? <X size={18} className="text-orange-600" /> : <Menu size={18} />}
+            {mobileMenuOpen ? <X size={18} className="text-slate-900" /> : <Menu size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Slide-down Navigation Drawer */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-orange-100 bg-white/98 backdrop-blur-lg px-4 pt-3 pb-5 space-y-3 shadow-xl animate-in slide-in-from-top-2 duration-200">
-          {/* User Profile Card on Mobile */}
-          <div className="bg-orange-50/70 border border-orange-200/80 rounded-2xl p-3.5 flex items-center justify-between">
+        <div className="md:hidden border-t border-slate-200/80 bg-white/98 backdrop-blur-lg px-4 pt-3 pb-5 space-y-3 shadow-lg animate-in slide-in-from-top-2 duration-150">
+          {/* User Info on Mobile */}
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-white font-extrabold text-sm shadow-xs">
+              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-xs">
                 {user.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div className="text-xs font-black text-stone-900 leading-tight">{user.name}</div>
-                <div className="text-[10px] text-orange-600 font-bold mt-0.5">
+                <div className="text-xs font-bold text-slate-900 leading-tight">{user.name}</div>
+                <div className="text-[10px] text-indigo-600 font-semibold mt-0.5">
                   {isMentor ? "Mentor / Pembimbing" : "Peserta Magang"}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Navigation Links for Mobile */}
+          {/* Navigation Links */}
           <div className="space-y-1">
             {currentNavLinks.map((link) => {
               const Icon = link.icon;
@@ -145,29 +143,29 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     isActive
-                      ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm shadow-orange-500/20"
-                      : "text-stone-700 hover:text-orange-600 hover:bg-orange-50"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-700 hover:bg-slate-100"
                   }`}
                 >
-                  <Icon size={16} />
+                  <Icon size={15} />
                   <span>{link.label}</span>
                 </Link>
               );
             })}
           </div>
 
-          {/* Mobile Logout Button */}
-          <div className="pt-2 border-t border-orange-100">
+          {/* Logout Button */}
+          <div className="pt-2 border-t border-slate-100">
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 logout();
               }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/80 text-xs font-extrabold transition-colors active:scale-[0.99]"
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 text-xs font-semibold transition-colors active:scale-[0.99]"
             >
-              <LogOut size={15} />
+              <LogOut size={14} />
               <span>Keluar dari Akun</span>
             </button>
           </div>

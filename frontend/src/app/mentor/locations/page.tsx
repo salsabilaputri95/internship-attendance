@@ -103,20 +103,20 @@ export default function LocationSettingsPage() {
   };
 
   return (
-    <div className="space-y-6 pb-12 max-w-3xl mx-auto">
+    <div className="space-y-5 pb-12 max-w-2xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
             href="/mentor"
-            className="p-2.5 rounded-2xl bg-white border border-orange-200 text-stone-700 hover:text-orange-600 transition-colors shadow-sm"
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={15} />
           </Link>
           <div>
-            <h1 className="text-xl font-black text-stone-900">Pengaturan Geofencing</h1>
-            <p className="text-xs text-orange-600 font-bold">
-              Konfigurasi titik pusat dan radius absensi kantor BPS Jeneponto
+            <h1 className="text-lg font-bold text-slate-900">Pengaturan Geofencing</h1>
+            <p className="text-xs text-slate-500">
+              Konfigurasi titik koordinat dan batas radius absensi kantor
             </p>
           </div>
         </div>
@@ -124,42 +124,41 @@ export default function LocationSettingsPage() {
 
       {message && (
         <div
-          className={`p-4 rounded-2xl border flex items-center gap-3 text-xs animate-in fade-in ${
+          className={`p-3.5 rounded-xl border flex items-center gap-2.5 text-xs animate-in fade-in ${
             message.type === "success"
               ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-              : "bg-red-50 border-red-200 text-red-700"
+              : "bg-rose-50 border-rose-200/80 text-rose-700"
           }`}
         >
           {message.type === "success" ? (
-            <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+            <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
           ) : (
-            <AlertCircle size={18} className="text-red-600 shrink-0" />
+            <AlertCircle size={16} className="text-rose-600 shrink-0" />
           )}
           <span>{message.text}</span>
         </div>
       )}
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center gap-3 text-stone-500">
-          <div className="w-8 h-8 rounded-full border-3 border-orange-200 border-t-orange-500 animate-spin" />
-          <p className="text-xs font-semibold">Memuat konfigurasi geofencing...</p>
+        <div className="py-16 flex flex-col items-center justify-center gap-2.5 text-slate-400">
+          <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-indigo-600 animate-spin" />
+          <p className="text-xs font-medium">Memuat konfigurasi geofencing...</p>
         </div>
       ) : (
-        <div className="bg-white border border-orange-200/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-orange-500/5 space-y-6">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
           {/* Info Banner */}
-          <div className="bg-orange-50/60 border border-orange-200 rounded-2xl p-4 flex items-start gap-3 text-xs text-stone-700">
-            <Shield size={18} className="text-orange-600 shrink-0 mt-0.5" />
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 flex items-start gap-2.5 text-xs text-slate-600">
+            <Shield size={16} className="text-indigo-600 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-stone-900">Keamanan Validasi Geofence:</span> Setiap
-              kali peserta magang menekan tombol Absen Masuk atau Pulang, koordinat GPS peserta akan
-              dihitung jaraknya terhadap koordinat di bawah ini menggunakan formula Haversine di sisi
-              backend Go.
+              <span className="font-semibold text-slate-900">Keamanan Validasi Geofence:</span> Setiap
+              kali peserta magang melakukan absensi, backend menghitung jarak GPS secara otomatis
+              terhadap titik koordinat di bawah menggunakan formula Haversine.
             </div>
           </div>
 
           <form onSubmit={handleSave} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Nama Titik Lokasi Kantor
               </label>
               <input
@@ -168,13 +167,13 @@ export default function LocationSettingsPage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Kantor BPS Kabupaten Jeneponto"
                 required
-                className="w-full bg-orange-50/30 border border-orange-200 rounded-xl px-4 py-2.5 text-xs text-stone-900 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium transition-all"
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Latitude
                 </label>
                 <input
@@ -182,14 +181,14 @@ export default function LocationSettingsPage() {
                   step="any"
                   value={latitude}
                   onChange={(e) => setLatitude(e.target.value)}
-                  placeholder="-5.6987123"
+                  placeholder="-5.6783321"
                   required
-                  className="w-full bg-orange-50/30 border border-orange-200 rounded-xl px-4 py-2.5 text-xs text-stone-900 font-mono focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Longitude
                 </label>
                 <input
@@ -197,15 +196,15 @@ export default function LocationSettingsPage() {
                   step="any"
                   value={longitude}
                   onChange={(e) => setLongitude(e.target.value)}
-                  placeholder="119.7289456"
+                  placeholder="119.7498101"
                   required
-                  className="w-full bg-orange-50/30 border border-orange-200 rounded-xl px-4 py-2.5 text-xs text-stone-900 font-mono focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Radius Toleransi Geofencing (Meter)
               </label>
               <div className="flex items-center gap-3">
@@ -216,35 +215,35 @@ export default function LocationSettingsPage() {
                   max="1000"
                   value={radius}
                   onChange={(e) => setRadius(e.target.value)}
-                  placeholder="100"
+                  placeholder="150"
                   required
-                  className="w-40 bg-orange-50/30 border border-orange-200 rounded-xl px-4 py-2.5 text-xs text-stone-900 font-mono focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-36 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all"
                 />
-                <span className="text-xs text-stone-500">
-                  (Default: <strong className="text-stone-800">100 meter</strong>)
+                <span className="text-xs text-slate-400">
+                  (Default: <strong className="text-slate-700 font-medium">150 meter</strong>)
                 </span>
               </div>
             </div>
 
             {/* Quick GPS helper button */}
-            <div className="pt-2">
+            <div className="pt-1">
               <button
                 type="button"
                 onClick={handleUseMyGPS}
-                className="py-2.5 px-4 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-700 text-xs font-bold flex items-center gap-2 transition-colors shadow-sm"
+                className="py-2 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-700 text-xs font-medium flex items-center gap-2 transition-colors"
               >
-                <Navigation size={14} />
+                <Navigation size={13} className="text-indigo-600" />
                 <span>Gunakan Koordinat GPS Saya Saat Ini</span>
               </button>
             </div>
 
-            <div className="pt-4 border-t border-orange-100 flex justify-end">
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
               <button
                 type="submit"
                 disabled={saving}
-                className="py-3 px-6 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-orange-500/20 transition-all disabled:opacity-50"
+                className="py-2.5 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-all disabled:opacity-50 active:scale-[0.99]"
               >
-                <Save size={15} />
+                <Save size={14} />
                 <span>{saving ? "Menyimpan..." : "Simpan Perubahan Geofence"}</span>
               </button>
             </div>

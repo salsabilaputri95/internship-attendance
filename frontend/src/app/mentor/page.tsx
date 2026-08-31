@@ -100,137 +100,137 @@ export default function MentorDashboardPage() {
   const stats = dashboardData?.stats;
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 rounded-3xl p-6 shadow-xl shadow-orange-500/15 text-white">
+    <div className="space-y-5 pb-12">
+      {/* Top Banner (Clean Dark Slate Card) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-xs">
         <div>
-          <div className="flex items-center gap-2 text-orange-100 text-xs font-extrabold mb-1">
-            <Sparkles size={14} className="text-amber-200" />
+          <div className="flex items-center gap-1.5 text-indigo-300 text-xs font-semibold mb-1">
+            <Sparkles size={13} className="text-indigo-400" />
             <span>Panel Pengawasan Mentor BPS Jeneponto</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black">
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight">
             Monitoring Presensi Magang
           </h1>
-          <p className="text-xs text-orange-100 mt-1 font-medium">
+          <p className="text-xs text-slate-400 mt-0.5">
             Evaluasi kehadiran real-time, inspeksi GPS, dan audit koreksi presensi.
           </p>
         </div>
 
         {/* Date Selector & Refresh */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl px-3.5 py-2 text-white">
-            <Calendar size={15} className="text-white" />
+          <div className="flex items-center gap-2 bg-slate-800 border border-slate-700/80 rounded-xl px-3 py-1.5 text-white">
+            <Calendar size={14} className="text-indigo-400" />
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-transparent text-xs text-white font-bold focus:outline-none cursor-pointer [color-scheme:dark]"
+              className="bg-transparent text-xs text-white font-medium focus:outline-none cursor-pointer [color-scheme:dark]"
             />
           </div>
 
           <button
             onClick={fetchDashboard}
             disabled={loading}
-            className="p-2.5 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-colors disabled:opacity-50"
+            className="p-2 rounded-xl bg-slate-800 border border-slate-700/80 text-white hover:bg-slate-700 transition-colors disabled:opacity-50"
             title="Refresh Data"
           >
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>
         </div>
       </div>
 
       {/* Aggregate Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <div className="bg-white border border-orange-100 rounded-3xl p-4 shadow-sm">
-          <div className="flex items-center justify-between text-stone-500 mb-1">
-            <span className="text-[11px] font-bold">Total Peserta</span>
-            <Users size={14} className="text-orange-500" />
+        <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between text-slate-500 mb-0.5">
+            <span className="text-[11px] font-semibold">Total Peserta</span>
+            <Users size={13} className="text-slate-400" />
           </div>
-          <div className="text-2xl font-black text-stone-900">
+          <div className="text-xl font-bold text-slate-900">
             {stats?.total_interns || 0}
           </div>
-          <div className="text-[10px] text-stone-400 font-medium mt-0.5">Peserta Aktif</div>
+          <div className="text-[10px] text-slate-400 font-medium">Peserta Aktif</div>
         </div>
 
-        <div className="bg-white border border-emerald-100 rounded-3xl p-4 shadow-sm">
-          <div className="flex items-center justify-between text-emerald-600 mb-1">
-            <span className="text-[11px] font-bold">Hadir</span>
-            <CheckCircle2 size={14} />
+        <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between text-emerald-700 mb-0.5">
+            <span className="text-[11px] font-semibold">Hadir</span>
+            <CheckCircle2 size={13} className="text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-emerald-600">
+          <div className="text-xl font-bold text-emerald-600">
             {stats?.hadir || 0}
           </div>
-          <div className="text-[10px] text-stone-400 font-medium mt-0.5">Tepat Waktu</div>
+          <div className="text-[10px] text-slate-400 font-medium">Tepat Waktu</div>
         </div>
 
-        <div className="bg-white border border-amber-100 rounded-3xl p-4 shadow-sm">
-          <div className="flex items-center justify-between text-amber-600 mb-1">
-            <span className="text-[11px] font-bold">Terlambat</span>
-            <Clock size={14} />
+        <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between text-amber-700 mb-0.5">
+            <span className="text-[11px] font-semibold">Terlambat</span>
+            <Clock size={13} className="text-amber-600" />
           </div>
-          <div className="text-2xl font-black text-amber-600">
+          <div className="text-xl font-bold text-amber-600">
             {stats?.terlambat || 0}
           </div>
-          <div className="text-[10px] text-stone-400 font-medium mt-0.5">&gt; 07:30 WITA</div>
+          <div className="text-[10px] text-slate-400 font-medium">&gt; 07:30 WITA</div>
         </div>
 
-        <div className="bg-white border border-blue-100 rounded-3xl p-4 shadow-sm">
-          <div className="flex items-center justify-between text-blue-600 mb-1">
-            <span className="text-[11px] font-bold">Izin</span>
-            <AlertCircle size={14} />
+        <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between text-indigo-700 mb-0.5">
+            <span className="text-[11px] font-semibold">Izin</span>
+            <AlertCircle size={13} className="text-indigo-600" />
           </div>
-          <div className="text-2xl font-black text-blue-600">
+          <div className="text-xl font-bold text-indigo-600">
             {stats?.izin || 0}
           </div>
-          <div className="text-[10px] text-stone-400 font-medium mt-0.5">Surat Izin / Sakit</div>
+          <div className="text-[10px] text-slate-400 font-medium">Disetujui</div>
         </div>
 
-        <div className="bg-white border border-stone-200 rounded-3xl p-4 shadow-sm">
-          <div className="flex items-center justify-between text-stone-500 mb-1">
-            <span className="text-[11px] font-bold">Belum Hadir</span>
-            <Clock size={14} />
+        <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between text-slate-600 mb-0.5">
+            <span className="text-[11px] font-semibold">Belum Hadir</span>
+            <Clock size={13} className="text-slate-400" />
           </div>
-          <div className="text-2xl font-black text-stone-700">
+          <div className="text-xl font-bold text-slate-700">
             {stats?.belum_hadir || 0}
           </div>
-          <div className="text-[10px] text-stone-400 font-medium mt-0.5">Belum Absen</div>
+          <div className="text-[10px] text-slate-400 font-medium">Belum Absen</div>
         </div>
       </div>
 
       {/* Monitoring Table Container */}
-      <div className="bg-white border border-orange-200/80 rounded-3xl p-5 sm:p-6 shadow-xl shadow-orange-500/5">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs">
         {/* Table Filters (Search, Date Picker, Status) */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-3 pb-5 border-b border-orange-100 mb-5">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-2.5 pb-4 border-b border-slate-100 mb-4">
           <div className="relative w-full md:w-72">
-            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Cari nama peserta / universitas..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-orange-50/30 border border-orange-200 rounded-2xl pl-10 pr-4 py-2 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all"
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-start sm:justify-end">
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start sm:justify-end">
             {/* Tanggal Presensi Filter */}
-            <div className="flex items-center gap-2 bg-orange-50/50 border border-orange-200 rounded-2xl px-3 py-1.5 text-xs text-stone-700">
-              <Calendar size={14} className="text-orange-500 shrink-0" />
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-700">
+              <Calendar size={13} className="text-indigo-600 shrink-0" />
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="bg-transparent text-xs text-stone-800 font-bold focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs text-slate-800 font-semibold focus:outline-none cursor-pointer"
               />
             </div>
 
             {/* Status Dropdown */}
             <div className="flex items-center gap-1.5">
-              <Filter size={14} className="text-stone-400 shrink-0" />
+              <Filter size={13} className="text-slate-400 shrink-0" />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-orange-50/50 border border-orange-200 rounded-2xl px-3 py-2 text-xs text-stone-700 font-bold focus:outline-none focus:border-orange-500"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 font-medium focus:outline-none focus:bg-white focus:border-indigo-500 cursor-pointer"
               >
                 <option value="">Semua Status</option>
                 <option value="HADIR">Hadir</option>
@@ -244,19 +244,19 @@ export default function MentorDashboardPage() {
 
         {/* Real-time Table */}
         {loading ? (
-          <div className="py-20 flex flex-col items-center justify-center gap-3 text-stone-500">
-            <div className="w-8 h-8 rounded-full border-3 border-orange-200 border-t-orange-500 animate-spin" />
-            <p className="text-xs font-semibold">Memuat data presensi peserta...</p>
+          <div className="py-16 flex flex-col items-center justify-center gap-2.5 text-slate-400">
+            <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-indigo-600 animate-spin" />
+            <p className="text-xs font-medium">Memuat data presensi peserta...</p>
           </div>
         ) : filteredAttendances.length === 0 ? (
-          <div className="py-16 text-center text-stone-400 text-xs font-medium">
+          <div className="py-12 text-center text-slate-400 text-xs font-medium">
             Tidak ada data presensi yang sesuai dengan filter pencarian.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-orange-100 text-stone-500 font-extrabold">
+                <tr className="border-b border-slate-100 text-slate-400 font-semibold text-[11px]">
                   <th className="pb-3 px-2">Peserta Magang</th>
                   <th className="pb-3 px-2">Masuk (GPS)</th>
                   <th className="pb-3 px-2">Pulang (GPS)</th>
@@ -264,23 +264,23 @@ export default function MentorDashboardPage() {
                   <th className="pb-3 px-2 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-orange-100">
+              <tbody className="divide-y divide-slate-100">
                 {filteredAttendances.map((item) => {
                   const isRecorded = item.id && item.id !== "00000000-0000-0000-0000-000000000000";
 
                   return (
-                    <tr key={item.intern_id} className="hover:bg-orange-50/50 transition-colors">
+                    <tr key={item.intern_id} className="hover:bg-slate-50/70 transition-colors">
                       {/* Intern Info */}
-                      <td className="py-4 px-2">
-                        <div className="font-extrabold text-stone-900">{item.intern_name}</div>
-                        <div className="text-[11px] text-stone-500 truncate max-w-[200px] font-medium">
+                      <td className="py-3.5 px-2">
+                        <div className="font-semibold text-slate-900">{item.intern_name}</div>
+                        <div className="text-[11px] text-slate-400 truncate max-w-[200px]">
                           {item.intern_university} • {item.intern_major}
                         </div>
                       </td>
 
                       {/* Check In */}
-                      <td className="py-4 px-2">
-                        <div className="font-mono font-bold text-stone-900">
+                      <td className="py-3.5 px-2">
+                        <div className="font-mono font-bold text-slate-900">
                           {item.check_in
                             ? new Date(item.check_in).toLocaleTimeString("id-ID", {
                                 hour: "2-digit",
@@ -289,16 +289,16 @@ export default function MentorDashboardPage() {
                             : "--:--"}
                         </div>
                         {item.check_in && (
-                          <div className="text-[10px] text-orange-600 flex items-center gap-1 font-semibold">
-                            <MapPin size={10} />
+                          <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                            <MapPin size={10} className="text-slate-400" />
                             {item.check_in_distance?.toFixed(0)}m
                           </div>
                         )}
                       </td>
 
                       {/* Check Out */}
-                      <td className="py-4 px-2">
-                        <div className="font-mono font-bold text-stone-900">
+                      <td className="py-3.5 px-2">
+                        <div className="font-mono font-bold text-slate-900">
                           {item.check_out
                             ? new Date(item.check_out).toLocaleTimeString("id-ID", {
                                 hour: "2-digit",
@@ -307,24 +307,24 @@ export default function MentorDashboardPage() {
                             : "--:--"}
                         </div>
                         {item.check_out && (
-                          <div className="text-[10px] text-orange-600 flex items-center gap-1 font-semibold">
-                            <MapPin size={10} />
+                          <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                            <MapPin size={10} className="text-slate-400" />
                             {item.check_out_distance?.toFixed(0)}m
                           </div>
                         )}
                       </td>
 
                       {/* Status */}
-                      <td className="py-4 px-2">
+                      <td className="py-3.5 px-2">
                         <span
-                          className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black ${
+                          className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
                             item.status === "HADIR"
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                               : item.status === "TERLAMBAT"
-                              ? "bg-amber-50 text-amber-700 border border-amber-200"
+                              ? "bg-amber-50 text-amber-800 border border-amber-200"
                               : item.status === "IZIN"
-                              ? "bg-blue-50 text-blue-700 border border-blue-200"
-                              : "bg-stone-100 text-stone-600 border border-stone-200"
+                              ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                              : "bg-slate-100 text-slate-600 border border-slate-200"
                           }`}
                         >
                           {item.status}
@@ -332,17 +332,17 @@ export default function MentorDashboardPage() {
                       </td>
 
                       {/* Action */}
-                      <td className="py-4 px-2 text-right">
+                      <td className="py-3.5 px-2 text-right">
                         {isRecorded ? (
                           <button
                             onClick={() => handleOpenDetail(item)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-700 font-extrabold text-[11px] transition-colors shadow-sm"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-700 font-medium text-[11px] transition-colors"
                           >
                             <Eye size={12} />
                             <span>Detail</span>
                           </button>
                         ) : (
-                          <span className="text-[11px] text-stone-400 italic">Belum Ada Data</span>
+                          <span className="text-[11px] text-slate-400 italic">Belum Ada Data</span>
                         )}
                       </td>
                     </tr>
