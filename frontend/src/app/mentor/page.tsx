@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
+  XCircle,
   Search,
   Filter,
   Calendar,
@@ -140,7 +141,7 @@ export default function MentorDashboardPage() {
       </div>
 
       {/* Aggregate Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 mb-0.5">
             <span className="text-[11px] font-semibold">Total Peserta</span>
@@ -183,6 +184,17 @@ export default function MentorDashboardPage() {
             {stats?.izin || 0}
           </div>
           <div className="text-[10px] text-slate-400 font-medium">Disetujui</div>
+        </div>
+
+        <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between text-rose-700 mb-0.5">
+            <span className="text-[11px] font-semibold">Alpha</span>
+            <XCircle size={13} className="text-rose-600" />
+          </div>
+          <div className="text-xl font-bold text-rose-600">
+            {stats?.alpha || 0}
+          </div>
+          <div className="text-[10px] text-slate-400 font-medium">Tanpa Keterangan</div>
         </div>
 
         <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
@@ -236,6 +248,7 @@ export default function MentorDashboardPage() {
                 <option value="HADIR">Hadir</option>
                 <option value="TERLAMBAT">Terlambat</option>
                 <option value="IZIN">Izin</option>
+                <option value="ALPHA">Alpha</option>
                 <option value="BELUM_HADIR">Belum Hadir</option>
               </select>
             </div>
@@ -324,6 +337,8 @@ export default function MentorDashboardPage() {
                               ? "bg-amber-50 text-amber-800 border border-amber-200"
                               : item.status === "IZIN"
                               ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                              : item.status === "ALPHA"
+                              ? "bg-rose-50 text-rose-700 border border-rose-200"
                               : "bg-slate-100 text-slate-600 border border-slate-200"
                           }`}
                         >

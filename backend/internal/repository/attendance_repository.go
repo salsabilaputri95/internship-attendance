@@ -260,7 +260,11 @@ func (r *attendanceRepository) GetTodayAllAttendance(ctx context.Context, dateSt
 			$1 as attendance_date,
 			a.check_in, a.check_in_latitude, a.check_in_longitude, a.check_in_accuracy, a.check_in_distance, a.check_in_photo_url,
 			a.check_out, a.check_out_latitude, a.check_out_longitude, a.check_out_accuracy, a.check_out_distance, a.check_out_photo_url,
-			COALESCE(a.status, 'BELUM_HADIR') as status,
+			CASE 
+				WHEN a.status IS NOT NULL THEN a.status
+				WHEN $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 'ALPHA'
+				ELSE 'BELUM_HADIR'
+			END as status,
 			a.notes,
 			COALESCE(a.created_at, NOW()) as created_at,
 			COALESCE(a.updated_at, NOW()) as updated_at,
@@ -271,8 +275,14 @@ func (r *attendanceRepository) GetTodayAllAttendance(ctx context.Context, dateSt
 		JOIN users u ON i.user_id = u.id
 		LEFT JOIN attendance a ON i.id = a.intern_id AND a.attendance_date = $1::date
 		WHERE i.status = 'active'
-		  AND ($2 = '' OR LOWER(u.name) LIKE '%' || LOWER($2) || '%' OR LOWER(i.university) LIKE '%' || LOWER($2) || '%')
-		  AND ($3 = '' OR COALESCE(a.status, 'BELUM_HADIR') = $3)
+		  AND ($2 = '' OR LOWER(u.name) LIKE '%' || LOWER($2) || '%' OR LOWER(i.university) LIKE '%' || LOWER($2) || '%' OR LOWER(i.major) LIKE '%' || LOWER($2) || '%')
+		  AND ($3 = '' OR (
+				CASE 
+					WHEN a.status IS NOT NULL THEN a.status
+					WHEN $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 'ALPHA'
+					ELSE 'BELUM_HADIR'
+				END
+		  ) = $3)
 		ORDER BY u.name ASC
 	`
 
@@ -307,8 +317,13 @@ func (r *attendanceRepository) GetTodayStats(ctx context.Context, dateStr string
 			COUNT(CASE WHEN a.status = 'HADIR' THEN 1 END) as hadir,
 			COUNT(CASE WHEN a.status = 'TERLAMBAT' THEN 1 END) as terlambat,
 			COUNT(CASE WHEN a.status = 'IZIN' THEN 1 END) as izin,
-			COUNT(CASE WHEN a.status = 'ALPHA' THEN 1 END) as alpha,
-			COUNT(CASE WHEN a.status IS NULL OR a.status = 'BELUM_HADIR' THEN 1 END) as belum_hadir
+			COUNT(CASE 
+				WHEN a.status = 'ALPHA' THEN 1 
+				WHEN (a.status IS NULL OR a.status = 'BELUM_HADIR') AND $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 1
+			END) as alpha,
+			COUNT(CASE 
+				WHEN (a.status IS NULL OR a.status = 'BELUM_HADIR') AND NOT ($1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5) THEN 1 
+			END) as belum_hadir
 		FROM interns i
 		LEFT JOIN attendance a ON i.id = a.intern_id AND a.attendance_date = $1::date
 		WHERE i.status = 'active'

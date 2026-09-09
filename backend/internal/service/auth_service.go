@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -183,11 +182,11 @@ func (s *authService) RegisterIntern(ctx context.Context, req *RegisterRequest) 
 	// 2. Create Intern Profile
 	startDate := req.StartDate
 	if startDate == "" {
-		startDate = time.Now().Format("2006-01-02")
+		startDate = "2026-08-10"
 	}
 	endDate := req.EndDate
 	if endDate == "" {
-		endDate = time.Now().AddDate(0, 3, 0).Format("2006-01-02")
+		endDate = "2027-02-09"
 	}
 
 	internID := uuid.New()

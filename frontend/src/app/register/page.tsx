@@ -39,8 +39,8 @@ export default function RegisterPage() {
     major: "",
     position: "Asisten Statistisi",
     phone: "",
-    start_date: new Date().toISOString().split("T")[0],
-    end_date: "",
+    start_date: "2026-08-10",
+    end_date: "2027-02-09",
   });
 
   const [loading, setLoading] = useState(false);
