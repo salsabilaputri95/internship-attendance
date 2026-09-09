@@ -83,10 +83,14 @@ func (r *internRepository) GetWithUserByID(ctx context.Context, id uuid.UUID) (*
 				COUNT(d.day) AS total_working_days
 			FROM interns i
 			CROSS JOIN LATERAL (
-				SELECT generate_series(i.start_date, LEAST(CURRENT_DATE, i.end_date), '1 day'::interval)::date AS day
+				SELECT generate_series(
+					GREATEST(i.start_date, '2026-09-01'::date),
+					LEAST(CURRENT_DATE, i.end_date),
+					'1 day'::interval
+				)::date AS day
 			) d
 			WHERE EXTRACT(DOW FROM d.day) BETWEEN 1 AND 5
-			  AND i.start_date <= LEAST(CURRENT_DATE, i.end_date)
+			  AND GREATEST(i.start_date, '2026-09-01'::date) <= LEAST(CURRENT_DATE, i.end_date)
 			  AND i.id = $1
 			GROUP BY i.id
 		),
@@ -100,7 +104,7 @@ func (r *internRepository) GetWithUserByID(ctx context.Context, id uuid.UUID) (*
 				COUNT(CASE WHEN a.status IN ('HADIR', 'TERLAMBAT', 'IZIN', 'ALPHA') AND EXTRACT(DOW FROM a.attendance_date) BETWEEN 1 AND 5 THEN 1 END) AS attended_working_days
 			FROM attendance a
 			JOIN interns i ON a.intern_id = i.id
-			WHERE a.attendance_date >= i.start_date 
+			WHERE a.attendance_date >= GREATEST(i.start_date, '2026-09-01'::date) 
 			  AND a.attendance_date <= LEAST(CURRENT_DATE, i.end_date)
 			  AND a.intern_id = $1
 			GROUP BY a.intern_id
@@ -165,10 +169,14 @@ func (r *internRepository) ListAllInterns(ctx context.Context, status string) ([
 				COUNT(d.day) AS total_working_days
 			FROM interns i
 			CROSS JOIN LATERAL (
-				SELECT generate_series(i.start_date, LEAST(CURRENT_DATE, i.end_date), '1 day'::interval)::date AS day
+				SELECT generate_series(
+					GREATEST(i.start_date, '2026-09-01'::date),
+					LEAST(CURRENT_DATE, i.end_date),
+					'1 day'::interval
+				)::date AS day
 			) d
 			WHERE EXTRACT(DOW FROM d.day) BETWEEN 1 AND 5
-			  AND i.start_date <= LEAST(CURRENT_DATE, i.end_date)
+			  AND GREATEST(i.start_date, '2026-09-01'::date) <= LEAST(CURRENT_DATE, i.end_date)
 			GROUP BY i.id
 		),
 		intern_att AS (
@@ -181,7 +189,7 @@ func (r *internRepository) ListAllInterns(ctx context.Context, status string) ([
 				COUNT(CASE WHEN a.status IN ('HADIR', 'TERLAMBAT', 'IZIN', 'ALPHA') AND EXTRACT(DOW FROM a.attendance_date) BETWEEN 1 AND 5 THEN 1 END) AS attended_working_days
 			FROM attendance a
 			JOIN interns i ON a.intern_id = i.id
-			WHERE a.attendance_date >= i.start_date 
+			WHERE a.attendance_date >= GREATEST(i.start_date, '2026-09-01'::date) 
 			  AND a.attendance_date <= LEAST(CURRENT_DATE, i.end_date)
 			GROUP BY a.intern_id
 		)

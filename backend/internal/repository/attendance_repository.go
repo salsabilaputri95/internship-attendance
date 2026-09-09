@@ -262,7 +262,7 @@ func (r *attendanceRepository) GetTodayAllAttendance(ctx context.Context, dateSt
 			a.check_out, a.check_out_latitude, a.check_out_longitude, a.check_out_accuracy, a.check_out_distance, a.check_out_photo_url,
 			CASE 
 				WHEN a.status IS NOT NULL THEN a.status
-				WHEN $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 'ALPHA'
+				WHEN $1::date >= '2026-09-01'::date AND $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 'ALPHA'
 				ELSE 'BELUM_HADIR'
 			END as status,
 			a.notes,
@@ -279,7 +279,7 @@ func (r *attendanceRepository) GetTodayAllAttendance(ctx context.Context, dateSt
 		  AND ($3 = '' OR (
 				CASE 
 					WHEN a.status IS NOT NULL THEN a.status
-					WHEN $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 'ALPHA'
+					WHEN $1::date >= '2026-09-01'::date AND $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 'ALPHA'
 					ELSE 'BELUM_HADIR'
 				END
 		  ) = $3)
@@ -319,10 +319,10 @@ func (r *attendanceRepository) GetTodayStats(ctx context.Context, dateStr string
 			COUNT(CASE WHEN a.status = 'IZIN' THEN 1 END) as izin,
 			COUNT(CASE 
 				WHEN a.status = 'ALPHA' THEN 1 
-				WHEN (a.status IS NULL OR a.status = 'BELUM_HADIR') AND $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 1
+				WHEN (a.status IS NULL OR a.status = 'BELUM_HADIR') AND $1::date >= '2026-09-01'::date AND $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 1
 			END) as alpha,
 			COUNT(CASE 
-				WHEN (a.status IS NULL OR a.status = 'BELUM_HADIR') AND NOT ($1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5) THEN 1 
+				WHEN (a.status IS NULL OR a.status = 'BELUM_HADIR') AND NOT ($1::date >= '2026-09-01'::date AND $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5) THEN 1 
 			END) as belum_hadir
 		FROM interns i
 		LEFT JOIN attendance a ON i.id = a.intern_id AND a.attendance_date = $1::date
