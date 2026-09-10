@@ -53,7 +53,6 @@ export default function InternsDirectoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [attendanceFilter, setAttendanceFilter] = useState<"ALL" | "HADIR" | "IZIN">("ALL");
 
   // History Modal State
   const [selectedInternId, setSelectedInternId] = useState<string | null>(null);
@@ -91,14 +90,7 @@ export default function InternsDirectoryPage() {
       i.major.toLowerCase().includes(searchQuery.toLowerCase());
     const matchStatus = statusFilter === "" || i.status === statusFilter;
 
-    let matchAttendance = true;
-    if (attendanceFilter === "HADIR") {
-      matchAttendance = (i.attendance_summary?.hadir || 0) > 0 || (i.attendance_summary?.terlambat || 0) > 0;
-    } else if (attendanceFilter === "IZIN") {
-      matchAttendance = (i.attendance_summary?.izin || 0) > 0;
-    }
-
-    return matchSearch && matchStatus && matchAttendance;
+    return matchSearch && matchStatus;
   });
 
   // Calculate overall statistics
@@ -183,40 +175,6 @@ export default function InternsDirectoryPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 shadow-2xs transition-all"
           />
-        </div>
-
-        {/* Filter Kehadiran (Semua, Hadir, Izin) */}
-        <div className="flex items-center p-1 bg-white border border-slate-200 rounded-xl shadow-2xs">
-          <button
-            onClick={() => setAttendanceFilter("ALL")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              attendanceFilter === "ALL"
-                ? "bg-slate-900 text-white shadow-2xs"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            Semua
-          </button>
-          <button
-            onClick={() => setAttendanceFilter("HADIR")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              attendanceFilter === "HADIR"
-                ? "bg-emerald-600 text-white shadow-2xs"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            Hadir
-          </button>
-          <button
-            onClick={() => setAttendanceFilter("IZIN")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              attendanceFilter === "IZIN"
-                ? "bg-indigo-600 text-white shadow-2xs"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            Izin
-          </button>
         </div>
 
         {/* Status Magang Dropdown */}
@@ -368,7 +326,7 @@ export default function InternsDirectoryPage() {
 
                     {/* Terlambat */}
                     <button
-                      onClick={() => handleOpenHistory(intern.id, "HADIR")}
+                      onClick={() => handleOpenHistory(intern.id, "TERLAMBAT")}
                       className="bg-white border border-amber-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-amber-300 hover:bg-amber-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       title="Lihat riwayat Terlambat"
                     >

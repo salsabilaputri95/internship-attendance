@@ -124,10 +124,12 @@ export function InternHistoryModal({
 
   // Filter logic
   const filteredHistory = history.filter((item) => {
-    // Status Filter: ALL, HADIR (HADIR or TERLAMBAT), IZIN
+    // Status Filter: ALL, HADIR, TERLAMBAT, IZIN, ALPHA
     let matchStatus = true;
     if (statusFilter === "HADIR") {
-      matchStatus = item.status === "HADIR" || item.status === "TERLAMBAT";
+      matchStatus = item.status === "HADIR";
+    } else if (statusFilter === "TERLAMBAT") {
+      matchStatus = item.status === "TERLAMBAT";
     } else if (statusFilter === "IZIN") {
       matchStatus = item.status === "IZIN";
     } else if (statusFilter === "ALPHA") {
@@ -216,13 +218,13 @@ export function InternHistoryModal({
           </div>
         )}
 
-        {/* Filter Toolbar (Semua, Hadir, Izin) + Search */}
+        {/* Filter Toolbar (Semua, Hadir, Terlambat, Izin, Alpha) + Search */}
         <div className="px-4 sm:px-5 py-3 border-b border-slate-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-2.5">
           {/* Status Filter Tabs */}
-          <div className="flex items-center p-1 bg-slate-100 rounded-xl w-full sm:w-auto">
+          <div className="flex flex-wrap items-center p-1 bg-slate-100 rounded-xl w-full sm:w-auto gap-0.5">
             <button
               onClick={() => setStatusFilter("ALL")}
-              className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 statusFilter === "ALL"
                   ? "bg-white text-slate-900 shadow-2xs"
                   : "text-slate-600 hover:text-slate-900"
@@ -232,7 +234,7 @@ export function InternHistoryModal({
             </button>
             <button
               onClick={() => setStatusFilter("HADIR")}
-              className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 statusFilter === "HADIR"
                   ? "bg-white text-emerald-700 shadow-2xs"
                   : "text-slate-600 hover:text-slate-900"
@@ -241,14 +243,34 @@ export function InternHistoryModal({
               Hadir
             </button>
             <button
+              onClick={() => setStatusFilter("TERLAMBAT")}
+              className={`flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                statusFilter === "TERLAMBAT"
+                  ? "bg-white text-amber-700 shadow-2xs"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Terlambat
+            </button>
+            <button
               onClick={() => setStatusFilter("IZIN")}
-              className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 statusFilter === "IZIN"
                   ? "bg-white text-indigo-700 shadow-2xs"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
               Izin
+            </button>
+            <button
+              onClick={() => setStatusFilter("ALPHA")}
+              className={`flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                statusFilter === "ALPHA"
+                  ? "bg-white text-rose-700 shadow-2xs"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Alpha
             </button>
           </div>
 
