@@ -33,12 +33,18 @@ type AttendanceDetailWithLogs struct {
 	Corrections []model.AttendanceCorrectionWithUser `json:"corrections"`
 }
 
+type InternHistoryResponse struct {
+	Intern  model.InternWithUser `json:"intern"`
+	History []model.Attendance   `json:"history"`
+}
+
 type MentorService interface {
 	GetDashboard(ctx context.Context, dateStr string) (*MentorDashboardResponse, error)
 	GetAttendanceList(ctx context.Context, dateStr, search, status string) ([]model.AttendanceDetailResponse, error)
 	GetAttendanceDetailWithLogs(ctx context.Context, attendanceID uuid.UUID) (*AttendanceDetailWithLogs, error)
 	CorrectAttendance(ctx context.Context, attendanceID uuid.UUID, mentorID uuid.UUID, req *CorrectionRequest) (*model.Attendance, error)
 	GetInterns(ctx context.Context, status string) ([]model.InternWithUser, error)
+	GetInternAttendanceHistory(ctx context.Context, internID uuid.UUID) (*InternHistoryResponse, error)
 }
 
 type mentorService struct {
@@ -201,3 +207,24 @@ func (s *mentorService) CorrectAttendance(ctx context.Context, attendanceID uuid
 func (s *mentorService) GetInterns(ctx context.Context, status string) ([]model.InternWithUser, error) {
 	return s.internRepo.ListAllInterns(ctx, status)
 }
+
+func (s *mentorService) GetInternAttendanceHistory(ctx context.Context, internID uuid.UUID) (*InternHistoryResponse, error) {
+	intern, err := s.internRepo.GetWithUserByID(ctx, internID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get intern profile: %w", err)
+	}
+	if intern == nil {
+		return nil, errors.New("data peserta magang tidak ditemukan")
+	}
+
+	history, err := s.attRepo.GetFullHistoryByIntern(ctx, internID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get attendance history: %w", err)
+	}
+
+	return &InternHistoryResponse{
+		Intern:  *intern,
+		History: history,
+	}, nil
+}
+

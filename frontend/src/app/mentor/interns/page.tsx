@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { InternHistoryModal } from "@/components/mentor/InternHistoryModal";
 import {
   Users,
   School,
@@ -19,6 +20,8 @@ import {
   XCircle,
   TrendingUp,
   Award,
+  History,
+  ChevronRight,
 } from "lucide-react";
 
 interface AttendanceSummary {
@@ -50,6 +53,12 @@ export default function InternsDirectoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [attendanceFilter, setAttendanceFilter] = useState<"ALL" | "HADIR" | "IZIN">("ALL");
+
+  // History Modal State
+  const [selectedInternId, setSelectedInternId] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalInitialFilter, setModalInitialFilter] = useState<string>("ALL");
 
   const fetchInterns = async () => {
     try {
@@ -69,13 +78,27 @@ export default function InternsDirectoryPage() {
     fetchInterns();
   }, []);
 
+  const handleOpenHistory = (internId: string, filter: string = "ALL") => {
+    setSelectedInternId(internId);
+    setModalInitialFilter(filter);
+    setModalOpen(true);
+  };
+
   const filteredInterns = interns.filter((i) => {
     const matchSearch =
       i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       i.university.toLowerCase().includes(searchQuery.toLowerCase()) ||
       i.major.toLowerCase().includes(searchQuery.toLowerCase());
     const matchStatus = statusFilter === "" || i.status === statusFilter;
-    return matchSearch && matchStatus;
+
+    let matchAttendance = true;
+    if (attendanceFilter === "HADIR") {
+      matchAttendance = (i.attendance_summary?.hadir || 0) > 0 || (i.attendance_summary?.terlambat || 0) > 0;
+    } else if (attendanceFilter === "IZIN") {
+      matchAttendance = (i.attendance_summary?.izin || 0) > 0;
+    }
+
+    return matchSearch && matchStatus && matchAttendance;
   });
 
   // Calculate overall statistics
@@ -135,7 +158,7 @@ export default function InternsDirectoryPage() {
             <TrendingUp size={13} className="text-slate-400" />
           </div>
           <div className="text-xl font-bold text-slate-800">{maxWorkingDays} <span className="text-xs font-normal text-slate-400">Hari</span></div>
-          <div className="text-[10px] text-slate-400 font-medium">Senin – Jumat</div>
+          <div className="text-[10px] text-slate-400 font-medium">Senin – Jumat (Mulai 1 Sep)</div>
         </div>
 
         <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
@@ -149,7 +172,8 @@ export default function InternsDirectoryPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-2.5">
+      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+        {/* Search */}
         <div className="relative flex-1">
           <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -161,6 +185,41 @@ export default function InternsDirectoryPage() {
           />
         </div>
 
+        {/* Filter Kehadiran (Semua, Hadir, Izin) */}
+        <div className="flex items-center p-1 bg-white border border-slate-200 rounded-xl shadow-2xs">
+          <button
+            onClick={() => setAttendanceFilter("ALL")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              attendanceFilter === "ALL"
+                ? "bg-slate-900 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Semua
+          </button>
+          <button
+            onClick={() => setAttendanceFilter("HADIR")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              attendanceFilter === "HADIR"
+                ? "bg-emerald-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Hadir
+          </button>
+          <button
+            onClick={() => setAttendanceFilter("IZIN")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              attendanceFilter === "IZIN"
+                ? "bg-indigo-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Izin
+          </button>
+        </div>
+
+        {/* Status Magang Dropdown */}
         <div className="flex items-center gap-2">
           <Filter size={14} className="text-slate-400 shrink-0" />
           <select
@@ -184,7 +243,7 @@ export default function InternsDirectoryPage() {
         </div>
       ) : filteredInterns.length === 0 ? (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-8 text-center text-slate-400 text-xs shadow-2xs">
-          Tidak ada data peserta magang yang ditemukan.
+          Tidak ada data peserta magang yang sesuai dengan filter.
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -267,18 +326,23 @@ export default function InternsDirectoryPage() {
                   </div>
                 </div>
 
-                {/* Rekapitulasi Kehadiran Premium Container */}
-                <div className="bg-slate-50/90 border border-slate-200/80 rounded-2xl p-4 space-y-3.5 shadow-xs">
+                {/* Rekapitulasi Kehadiran Premium Container (Clickable to open Detail History Modal) */}
+                <div className="bg-slate-50/90 border border-slate-200/80 rounded-2xl p-4 space-y-3.5 shadow-xs transition-all">
                   {/* Header Row */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-800 tracking-tight">
+                    <button
+                      onClick={() => handleOpenHistory(intern.id, "ALL")}
+                      className="flex items-center gap-2 text-left group hover:text-indigo-600 transition-colors"
+                      title="Klik untuk melihat riwayat kehadiran lengkap"
+                    >
+                      <span className="text-xs font-bold text-slate-800 group-hover:text-indigo-600 tracking-tight flex items-center gap-1">
                         Rekap Kehadiran
+                        <ChevronRight size={13} className="text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
                       </span>
                       <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-bold text-slate-600 shadow-2xs">
                         {summary.total_working_days} Hari Kerja
                       </span>
-                    </div>
+                    </button>
 
                     <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-extrabold shadow-2xs">
                       <span>{summary.attendance_rate.toFixed(1)}%</span>
@@ -286,47 +350,63 @@ export default function InternsDirectoryPage() {
                     </div>
                   </div>
 
-                  {/* 4 Stat Tiles Grid */}
+                  {/* 4 Stat Tiles Grid (Clickable to Filter Modal) */}
                   <div className="grid grid-cols-4 gap-2">
                     {/* Hadir */}
-                    <div className="bg-white border border-emerald-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-emerald-300 hover:bg-emerald-50/40 transition-all">
+                    <button
+                      onClick={() => handleOpenHistory(intern.id, "HADIR")}
+                      className="bg-white border border-emerald-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-emerald-300 hover:bg-emerald-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      title="Lihat riwayat Hadir"
+                    >
                       <div className="text-[10px] font-medium text-emerald-700">
                         Hadir
                       </div>
                       <div className="text-sm font-bold text-emerald-600 tracking-tight">
                         {summary.hadir}
                       </div>
-                    </div>
+                    </button>
 
                     {/* Terlambat */}
-                    <div className="bg-white border border-amber-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-amber-300 hover:bg-amber-50/40 transition-all">
+                    <button
+                      onClick={() => handleOpenHistory(intern.id, "HADIR")}
+                      className="bg-white border border-amber-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-amber-300 hover:bg-amber-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      title="Lihat riwayat Terlambat"
+                    >
                       <div className="text-[10px] font-medium text-amber-800">
                         Telat
                       </div>
                       <div className="text-sm font-bold text-amber-600 tracking-tight">
                         {summary.terlambat}
                       </div>
-                    </div>
+                    </button>
 
                     {/* Izin */}
-                    <div className="bg-white border border-indigo-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-indigo-300 hover:bg-indigo-50/40 transition-all">
+                    <button
+                      onClick={() => handleOpenHistory(intern.id, "IZIN")}
+                      className="bg-white border border-indigo-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-indigo-300 hover:bg-indigo-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      title="Lihat riwayat Izin"
+                    >
                       <div className="text-[10px] font-medium text-indigo-700">
                         Izin
                       </div>
                       <div className="text-sm font-bold text-indigo-600 tracking-tight">
                         {summary.izin}
                       </div>
-                    </div>
+                    </button>
 
                     {/* Alpha */}
-                    <div className="bg-white border border-rose-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-rose-300 hover:bg-rose-50/40 transition-all">
+                    <button
+                      onClick={() => handleOpenHistory(intern.id, "ALPHA")}
+                      className="bg-white border border-rose-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-rose-300 hover:bg-rose-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      title="Lihat riwayat Alpha"
+                    >
                       <div className="text-[10px] font-medium text-rose-700">
                         Alpha
                       </div>
                       <div className="text-sm font-bold text-rose-600 tracking-tight">
                         {summary.alpha}
                       </div>
-                    </div>
+                    </button>
                   </div>
 
                   {/* Multi-Segment Composition Progress Bar */}
@@ -376,8 +456,8 @@ export default function InternsDirectoryPage() {
                       )}
                     </div>
 
-                    {/* Progress Bar Micro Legend */}
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium px-0.5">
+                    {/* Progress Bar Micro Legend & Action Link */}
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium px-0.5 pt-0.5">
                       <div className="flex items-center gap-2">
                         <span className="flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
@@ -396,7 +476,14 @@ export default function InternsDirectoryPage() {
                           Alpha
                         </span>
                       </div>
-                      <span>Total {summary.total_working_days} Hari</span>
+                      
+                      <button
+                        onClick={() => handleOpenHistory(intern.id, "ALL")}
+                        className="text-indigo-600 hover:text-indigo-700 font-bold flex items-center gap-0.5 hover:underline"
+                      >
+                        <History size={11} />
+                        Lihat Riwayat
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -405,6 +492,14 @@ export default function InternsDirectoryPage() {
           })}
         </div>
       )}
+
+      {/* Intern Attendance History Modal */}
+      <InternHistoryModal
+        isOpen={modalOpen}
+        internId={selectedInternId}
+        onClose={() => setModalOpen(false)}
+        initialFilter={modalInitialFilter}
+      />
     </div>
   );
 }

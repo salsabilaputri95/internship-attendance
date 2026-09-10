@@ -29,6 +29,7 @@ type AttendanceRepository interface {
 	CreateCheckIn(ctx context.Context, att *model.Attendance) error
 	UpdateCheckOut(ctx context.Context, att *model.Attendance) error
 	GetHistoryByIntern(ctx context.Context, internID uuid.UUID, limit, offset int) ([]model.Attendance, error)
+	GetFullHistoryByIntern(ctx context.Context, internID uuid.UUID) ([]model.Attendance, error)
 	GetTodayAllAttendance(ctx context.Context, dateStr string, search string, status string) ([]model.AttendanceDetailResponse, error)
 	GetTodayStats(ctx context.Context, dateStr string) (*TodayStats, error)
 	CreateCorrection(ctx context.Context, corr *model.AttendanceCorrection) error
@@ -245,6 +246,64 @@ func (r *attendanceRepository) GetHistoryByIntern(ctx context.Context, internID 
 			&a.Status, &a.Notes, &a.CreatedAt, &a.UpdatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan attendance history row: %w", err)
+		}
+		list = append(list, a)
+	}
+
+	return list, nil
+}
+
+func (r *attendanceRepository) GetFullHistoryByIntern(ctx context.Context, internID uuid.UUID) ([]model.Attendance, error) {
+	query := `
+		WITH workdays AS (
+			SELECT generate_series(
+				GREATEST(i.start_date, '2026-09-01'::date),
+				LEAST(CURRENT_DATE, i.end_date),
+				'1 day'::interval
+			)::date AS day
+			FROM interns i
+			WHERE i.id = $1
+		),
+		all_dates AS (
+			SELECT day FROM workdays WHERE EXTRACT(DOW FROM day) BETWEEN 1 AND 5
+			UNION
+			SELECT attendance_date FROM attendance WHERE intern_id = $1
+		)
+		SELECT 
+			COALESCE(a.id, '00000000-0000-0000-0000-000000000000'::uuid) as id,
+			$1 as intern_id,
+			d.day::text as attendance_date,
+			a.check_in, a.check_in_latitude, a.check_in_longitude, a.check_in_accuracy, a.check_in_distance, a.check_in_photo_url,
+			a.check_out, a.check_out_latitude, a.check_out_longitude, a.check_out_accuracy, a.check_out_distance, a.check_out_photo_url,
+			CASE 
+				WHEN a.status IS NOT NULL THEN a.status
+				WHEN d.day >= '2026-09-01'::date AND d.day < CURRENT_DATE AND EXTRACT(DOW FROM d.day) BETWEEN 1 AND 5 THEN 'ALPHA'
+				ELSE 'BELUM_HADIR'
+			END as status,
+			a.notes,
+			COALESCE(a.created_at, NOW()) as created_at,
+			COALESCE(a.updated_at, NOW()) as updated_at
+		FROM all_dates d
+		LEFT JOIN attendance a ON a.intern_id = $1 AND a.attendance_date = d.day
+		ORDER BY d.day DESC
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, internID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query full attendance history: %w", err)
+	}
+	defer rows.Close()
+
+	var list []model.Attendance
+	for rows.Next() {
+		var a model.Attendance
+		if err := rows.Scan(
+			&a.ID, &a.InternID, &a.AttendanceDate,
+			&a.CheckIn, &a.CheckInLatitude, &a.CheckInLongitude, &a.CheckInAccuracy, &a.CheckInDistance, &a.CheckInPhotoURL,
+			&a.CheckOut, &a.CheckOutLatitude, &a.CheckOutLongitude, &a.CheckOutAccuracy, &a.CheckOutDistance, &a.CheckOutPhotoURL,
+			&a.Status, &a.Notes, &a.CreatedAt, &a.UpdatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan full attendance row: %w", err)
 		}
 		list = append(list, a)
 	}

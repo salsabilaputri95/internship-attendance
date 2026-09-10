@@ -103,3 +103,21 @@ func (h *MentorHandler) GetInterns(w http.ResponseWriter, r *http.Request) {
 
 	utils.SuccessResponse(w, http.StatusOK, "Daftar peserta magang berhasil dimuat", interns)
 }
+
+func (h *MentorHandler) GetInternAttendanceHistory(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+	internID, err := uuid.Parse(idParam)
+	if err != nil {
+		utils.ErrorResponse(w, http.StatusBadRequest, "ID peserta magang tidak valid", nil)
+		return
+	}
+
+	res, err := h.mentorService.GetInternAttendanceHistory(r.Context(), internID)
+	if err != nil {
+		utils.ErrorResponse(w, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	utils.SuccessResponse(w, http.StatusOK, "Riwayat presensi peserta berhasil dimuat", res)
+}
+

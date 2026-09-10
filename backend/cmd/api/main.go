@@ -131,6 +131,7 @@ func main() {
 				mentorRoute.Get("/mentor/attendance/{id}", mentorHandler.GetAttendanceDetail)
 				mentorRoute.Post("/mentor/attendance/{id}/correct", mentorHandler.CorrectAttendance)
 				mentorRoute.Get("/mentor/interns", mentorHandler.GetInterns)
+				mentorRoute.Get("/mentor/interns/{id}/history", mentorHandler.GetInternAttendanceHistory)
 
 				// Export Laporan (CSV)
 				mentorRoute.Get("/export/csv", exportHandler.ExportCSV)
