@@ -185,15 +185,6 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api
 
 ---
 
-## 👥 Akun Akses Default
-
-| Role                          | Email                         | Password                | Keterangan                                                                |
-| ----------------------------- | ----------------------------- | ----------------------- | ------------------------------------------------------------------------- |
-| **Pembimbing / Mentor** | `bpskabjeneponto@gmail.com` | `password123`         | Akses penuh ke panel monitoring, koreksi absensi, dan pengaturan geofence |
-| **Peserta Magang**      | *(Daftar Mandiri)*          | *(Sesuai Registrasi)* | Buat akun melalui menu`/register` untuk langsung melakukan presensi     |
-
----
-
 ## 🌐 Ringkasan API Endpoints
 
 ### 🔓 Publik / Autentikasi
