@@ -146,7 +146,7 @@ func (s *attendanceService) CheckIn(ctx context.Context, req *CheckInRequest) (*
 	// 7. Save check-in
 	att := &model.Attendance{
 		ID:               uuid.New(),
-		InternID:         req.InternID,
+		InternID:         &req.InternID,
 		AttendanceDate:   todayStr,
 		CheckIn:          &now,
 		CheckInLatitude:  &req.Latitude,
@@ -311,7 +311,7 @@ func (s *attendanceService) SubmitLeave(ctx context.Context, req *LeaveRequest) 
 
 	att := &model.Attendance{
 		ID:             uuid.New(),
-		InternID:       req.InternID,
+		InternID:       &req.InternID,
 		AttendanceDate: dateStr,
 		Status:         model.StatusIzin,
 		Notes:          &fullNotes,

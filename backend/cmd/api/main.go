@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -31,6 +32,11 @@ func main() {
 	}
 	defer db.Close()
 
+	// Ensure Super Admin and Schema Updates
+	if err := db.EnsureSuperAdminAndSchema(context.Background()); err != nil {
+		log.Printf("[Server] Warning initializing superadmin: %v", err)
+	}
+
 	// 2. Storage Service (Local Filesystem Adapter)
 	storageService, err := storage.NewLocalStorageService(cfg.LocalStoragePath, cfg.AppBaseURL)
 	if err != nil {
@@ -43,12 +49,14 @@ func main() {
 	locRepo := repository.NewLocationRepository(db)
 	attRepo := repository.NewAttendanceRepository(db)
 	exportRepo := repository.NewExportRepository(db)
+	adminRepo := repository.NewAdminRepository(db)
 
 	// 4. Services
 	authService := service.NewAuthService(userRepo, internRepo, cfg)
 	attService := service.NewAttendanceService(attRepo, locRepo, internRepo, storageService)
 	mentorService := service.NewMentorService(attRepo, locRepo, internRepo, userRepo)
 	locService := service.NewLocationService(locRepo)
+	adminService := service.NewAdminService(adminRepo, userRepo, locRepo)
 
 	// 5. Handlers
 	authHandler := handler.NewAuthHandler(authService)
@@ -56,6 +64,7 @@ func main() {
 	mentorHandler := handler.NewMentorHandler(mentorService)
 	locHandler := handler.NewLocationHandler(locService)
 	exportHandler := handler.NewExportHandler(exportRepo)
+	adminHandler := handler.NewAdminHandler(adminService)
 
 	// Rate Limiters
 	loginLimiter := middleware.NewRateLimiter(10, time.Minute)   // 10 login attempts per minute per IP
@@ -139,6 +148,19 @@ func main() {
 				// Location Management
 				mentorRoute.Get("/locations/all", locHandler.GetAllLocations)
 				mentorRoute.Put("/locations/{id}", locHandler.UpdateLocation)
+			})
+
+			// Super Admin Routes (Role: admin)
+			protected.Group(func(adminRoute chi.Router) {
+				adminRoute.Use(middleware.RequireRole(model.RoleAdmin))
+
+				adminRoute.Get("/admin/dashboard-stats", adminHandler.GetDashboardStats)
+				adminRoute.Get("/admin/attendance", adminHandler.GetAllAttendance)
+				adminRoute.Get("/admin/attendance/{id}", adminHandler.GetAttendanceDetail)
+				adminRoute.Post("/admin/attendance", adminHandler.CreateAttendance)
+				adminRoute.Put("/admin/attendance/{id}", adminHandler.UpdateAttendance)
+				adminRoute.Delete("/admin/attendance/{id}", adminHandler.DeleteAttendance)
+				adminRoute.Get("/admin/users-list", adminHandler.GetUsersList)
 			})
 		})
 	})

@@ -32,7 +32,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*model.U
 	query := `
 		SELECT id, name, email, password_hash, role, created_at, updated_at
 		FROM users
-		WHERE LOWER(email) = LOWER($1)
+		WHERE LOWER(email) = LOWER($1) OR LOWER(name) = LOWER($1)
 		LIMIT 1
 	`
 

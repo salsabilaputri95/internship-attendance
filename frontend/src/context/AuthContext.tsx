@@ -73,7 +73,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!user && !isPublic) {
       router.push("/login");
     } else if (user && isPublic) {
-      if (user.role === "mentor" || user.role === "admin") {
+      if (user.role === "admin") {
+        router.push("/admin");
+      } else if (user.role === "mentor") {
         router.push("/mentor");
       } else {
         router.push("/dashboard");
@@ -96,7 +98,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(authToken);
     setUser(loggedUser);
 
-    if (loggedUser.role === "mentor" || loggedUser.role === "admin") {
+    if (loggedUser.role === "admin") {
+      router.push("/admin");
+    } else if (loggedUser.role === "mentor") {
       router.push("/mentor");
     } else {
       router.push("/dashboard");

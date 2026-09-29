@@ -27,6 +27,7 @@ export function Navbar() {
 
   if (!user) return null;
 
+  const isAdmin = user.role === "admin";
   const isMentor = user.role === "mentor" || user.role === "admin";
 
   const internNavLinks = [
@@ -41,13 +42,21 @@ export function Navbar() {
     { href: "/mentor/export", label: "Export CSV", icon: Download },
   ];
 
-  const currentNavLinks = isMentor ? mentorNavLinks : internNavLinks;
+  const adminNavLinks = [
+    { href: "/admin", label: "Super Admin", icon: LayoutDashboard },
+    { href: "/mentor", label: "Monitoring", icon: ClipboardList },
+    { href: "/mentor/interns", label: "Peserta Magang", icon: Users },
+    { href: "/mentor/locations", label: "Lokasi Kantor", icon: MapPin },
+    { href: "/mentor/export", label: "Export CSV", icon: Download },
+  ];
+
+  const currentNavLinks = isAdmin ? adminNavLinks : isMentor ? mentorNavLinks : internNavLinks;
 
   return (
     <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 text-slate-900 shadow-2xs">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand */}
-        <Link href={isMentor ? "/mentor" : "/dashboard"} className="flex items-center gap-3 group">
+        <Link href={isAdmin ? "/admin" : isMentor ? "/mentor" : "/dashboard"} className="flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-xl overflow-hidden group-hover:scale-105 transition-transform flex items-center justify-center bg-white p-1 border border-slate-200 shadow-2xs">
             <img
               src="/logo.webp"
@@ -56,8 +65,13 @@ export function Navbar() {
             />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-slate-900 leading-tight">
+            <h1 className="text-sm font-bold text-slate-900 leading-tight flex items-center gap-1.5">
               BPS Jeneponto
+              {isAdmin && (
+                <span className="px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 text-[9px] font-extrabold border border-purple-200">
+                  SUPER ADMIN
+                </span>
+              )}
             </h1>
             <p className="text-[11px] text-slate-500 font-medium">Presensi Magang</p>
           </div>
@@ -78,7 +92,7 @@ export function Navbar() {
                     : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
                 }`}
               >
-                <Icon size={14} className={isActive ? "text-indigo-600" : "text-slate-500"} />
+                <Icon size={14} className={isActive ? (isAdmin ? "text-purple-600" : "text-indigo-600") : "text-slate-500"} />
                 {link.label}
               </Link>
             );
@@ -89,8 +103,10 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <div className="text-right">
             <div className="text-xs font-bold text-slate-900">{user.name}</div>
-            <div className="text-[10px] text-indigo-600 uppercase tracking-wider font-semibold">
-              {isMentor ? "Mentor" : "Peserta Magang"}
+            <div className={`text-[10px] uppercase tracking-wider font-bold ${
+              isAdmin ? "text-purple-600" : isMentor ? "text-indigo-600" : "text-emerald-600"
+            }`}>
+              {isAdmin ? "Super Admin" : isMentor ? "Mentor" : "Peserta Magang"}
             </div>
           </div>
 

@@ -6,30 +6,32 @@ Platform manajemen dan pemantauan kehadiran peserta magang berbasis **Geofencing
 
 ## 📋 Fitur Utama
 
-| Fitur | Deskripsi |
-|---|---|
-| ⚡ **Presensi Masuk & Pulang Cepat** | Pencatatan kehadiran instan dengan validasi koordinat GPS dan deteksi otomatis waktu kedatangan. |
-| 📍 **Validasi Geofencing Presisi** | Backend Go memverifikasi jarak lokasi menggunakan formula *Haversine* terhadap radius kantor aktif. |
-| 📝 **Pengajuan Izin & Sakit Mandiri** | Peserta dapat mengajukan izin sakit, urusan dinas, atau keperluan akademik dengan alasan tertulis tanpa batasan geofence. |
-| 📊 **Dashboard Monitoring Real-Time** | Panel pembimbing/mentor untuk memantau ringkasan statistik kehadiran, keterlambatan, dan izin harian secara *live*. |
-| 🔍 **Inspeksi Presensi & Riwayat GPS** | Pembimbing dapat melihat rincian koordinat, jarak meter GPS, waktu presisi, dan catatan tugas/keterlambatan peserta. |
-| 🛡️ **Koreksi Presensi & Audit Log** | Pembimbing dapat mengoreksi status kehadiran peserta dengan catatan alasan wajib yang tersimpan permanen di tabel audit log. |
-| 📑 **Export Laporan CSV / Excel** | Ekspor data rekapitulasi kehadiran berdasarkan rentang tanggal fleksibel dalam format CSV berstandar UTF-8 BOM. |
-| ⚙️ **Manajemen Lokasi & Radius Geofence** | Pengaturan titik koordinat *latitude*, *longitude*, dan toleransi radius (meter) kantor yang dapat disesuaikan kapan saja. |
-| 👤 **Registrasi Mandiri & Lupa Kata Sandi** | Formulir pendaftaran peserta magang baru dengan pilihan posisi spesifik dan fasilitas reset kata sandi mandiri. |
-| 🔒 **Security & Rate Limiting** | Dilengkapi proteksi JWT Token, Role-Based Access Control (RBAC), serta *in-memory rate limiter* per alamat IP. |
+| Fitur                                            | Deskripsi                                                                                                                     |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| ⚡**Presensi Masuk & Pulang Cepat**        | Pencatatan kehadiran instan dengan validasi koordinat GPS dan deteksi otomatis waktu kedatangan.                              |
+| 📍**Validasi Geofencing Presisi**          | Backend Go memverifikasi jarak lokasi menggunakan formula*Haversine* terhadap radius kantor aktif.                          |
+| 📝**Pengajuan Izin & Sakit Mandiri**       | Peserta dapat mengajukan izin sakit, urusan dinas, atau keperluan akademik dengan alasan tertulis tanpa batasan geofence.     |
+| 📊**Dashboard Monitoring Real-Time**       | Panel pembimbing/mentor untuk memantau ringkasan statistik kehadiran, keterlambatan, dan izin harian secara*live*.          |
+| 🔍**Inspeksi Presensi & Riwayat GPS**      | Pembimbing dapat melihat rincian koordinat, jarak meter GPS, waktu presisi, dan catatan tugas/keterlambatan peserta.          |
+| 🛡️**Koreksi Presensi & Audit Log**       | Pembimbing dapat mengoreksi status kehadiran peserta dengan catatan alasan wajib yang tersimpan permanen di tabel audit log.  |
+| 📑**Export Laporan CSV / Excel**           | Ekspor data rekapitulasi kehadiran berdasarkan rentang tanggal fleksibel dalam format CSV berstandar UTF-8 BOM.               |
+| ⚙️**Manajemen Lokasi & Radius Geofence** | Pengaturan titik koordinat*latitude*, *longitude*, dan toleransi radius (meter) kantor yang dapat disesuaikan kapan saja. |
+| 👤**Registrasi Mandiri & Lupa Kata Sandi** | Formulir pendaftaran peserta magang baru dengan pilihan posisi spesifik dan fasilitas reset kata sandi mandiri.               |
+| 🔒**Security & Rate Limiting**             | Dilengkapi proteksi JWT Token, Role-Based Access Control (RBAC), serta*in-memory rate limiter* per alamat IP.               |
 
 ---
 
 ## 🛠️ Arsitektur & Teknologi
 
 ### Backend
+
 - **Go (Golang v1.21+)** dengan **Chi v5 Router**
 - **Clean / Layered Architecture**: Handler $\rightarrow$ Service $\rightarrow$ Repository $\rightarrow$ Model
 - **PostgreSQL (v14+)** sebagai database relasional utama (relasi FK, indexing performa tinggi)
 - **Local File Storage Adapter** untuk penyimpanan file media tanpa ketergantungan *container cloud*
 
 ### Frontend
+
 - **Next.js 16 (App Router)** dengan **TypeScript**
 - **Tailwind CSS** (Tema modern bernuansa *Light Orange & Amber*)
 - **Lucide Icons** untuk visual antarmuka modern
@@ -92,17 +94,18 @@ Presensi Magang/
 
 Sebelum menjalankan aplikasi, pastikan *software* berikut telah terpasang pada komputer Anda:
 
-| Komponen | Versi Minimal | Keterangan |
-|---|---|---|
-| **Go** | 1.21+ | Runtime backend |
-| **Node.js** | 18+ (disarankan 20+) | Runtime frontend |
-| **PostgreSQL** | 14+ | Relational database server |
+| Komponen             | Versi Minimal        | Keterangan                 |
+| -------------------- | -------------------- | -------------------------- |
+| **Go**         | 1.21+                | Runtime backend            |
+| **Node.js**    | 18+ (disarankan 20+) | Runtime frontend           |
+| **PostgreSQL** | 14+                  | Relational database server |
 
 ---
 
 ## 🚀 Panduan Menjalankan Sistem (Lokal / Native)
 
 ### 1. Inisialisasi Database PostgreSQL
+
 Pastikan layanan PostgreSQL aktif pada port default (`5432`). Kemudian jalankan *migration runner*:
 
 ```bash
@@ -118,18 +121,21 @@ go run ./cmd/migrate fresh
 ---
 
 ### 2. Menjalankan Backend API
+
 Buka terminal dan jalankan server backend Go:
 
 ```bash
 cd backend
 go run ./cmd/api
 ```
-Server REST API akan berjalan pada **`http://localhost:8080`**.  
+
+Server REST API akan berjalan pada **`http://localhost:8080`**.
 Uji koneksi melalui endpoint kesehatan: `GET http://localhost:8080/health`.
 
 ---
 
 ### 3. Menjalankan Frontend Next.js
+
 Buka terminal baru dan jalankan server frontend:
 
 ```bash
@@ -141,6 +147,7 @@ npm install
 # Jalankan development server
 npm run dev
 ```
+
 Buka antarmuka aplikasi di peramban: **`http://localhost:3000`**.
 
 ---
@@ -148,6 +155,7 @@ Buka antarmuka aplikasi di peramban: **`http://localhost:3000`**.
 ## 🔑 Konfigurasi Environment
 
 ### `backend/.env`
+
 ```env
 # Application
 APP_ENV=development
@@ -170,6 +178,7 @@ LOCAL_STORAGE_PATH=./uploads
 ```
 
 ### `frontend/.env.local`
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8080/api
 ```
@@ -178,22 +187,24 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api
 
 ## 👥 Akun Akses Default
 
-| Role | Email | Password | Keterangan |
-|---|---|---|---|
-| **Pembimbing / Mentor** | `bpskabjeneponto@gmail.com` | `password123` | Akses penuh ke panel monitoring, koreksi absensi, dan pengaturan geofence |
-| **Peserta Magang** | *(Daftar Mandiri)* | *(Sesuai Registrasi)* | Buat akun melalui menu `/register` untuk langsung melakukan presensi |
+| Role                          | Email                         | Password                | Keterangan                                                                |
+| ----------------------------- | ----------------------------- | ----------------------- | ------------------------------------------------------------------------- |
+| **Pembimbing / Mentor** | `bpskabjeneponto@gmail.com` | `password123`         | Akses penuh ke panel monitoring, koreksi absensi, dan pengaturan geofence |
+| **Peserta Magang**      | *(Daftar Mandiri)*          | *(Sesuai Registrasi)* | Buat akun melalui menu`/register` untuk langsung melakukan presensi     |
 
 ---
 
 ## 🌐 Ringkasan API Endpoints
 
 ### 🔓 Publik / Autentikasi
+
 - `POST /api/auth/register` — Pendaftaran akun peserta magang baru
 - `POST /api/auth/login` — Autentikasi dan penerbitan token JWT
 - `POST /api/auth/forgot-password` — Reset kata sandi akun
 - `GET /api/locations` — Memuat titik koordinat dan radius kantor aktif
 
 ### 👤 Peserta Magang (Memerlukan Token JWT, Role: `intern`)
+
 - `GET /api/auth/me` — Memuat profil pengguna aktif
 - `POST /api/attendance/check-in` — Melakukan presensi masuk (koordinat GPS + catatan)
 - `POST /api/attendance/check-out` — Melakukan presensi pulang (koordinat GPS)
@@ -202,6 +213,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api
 - `GET /api/attendance/history` — Memuat riwayat seluruh daftar presensi peserta
 
 ### 🛡️ Pembimbing / Mentor (Memerlukan Token JWT, Role: `mentor`)
+
 - `GET /api/mentor/dashboard?date=YYYY-MM-DD` — Ringkasan statistik & tabel presensi harian
 - `GET /api/mentor/attendance/{id}` — Detail inspeksi catatan presensi & GPS peserta
 - `POST /api/mentor/attendance/{id}/correct` — Koreksi status kehadiran dengan catatan audit log
@@ -234,5 +246,5 @@ go test ./internal/utils/... -v
 
 ## 📄 Lisensi & Pembuat
 
-Dibuat dan dikembangkan oleh:  
+Dibuat dan dikembangkan oleh:
 GitHub: [Thinkerstone](https://github.com/salsabilaputri95)
