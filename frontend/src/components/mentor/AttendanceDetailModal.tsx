@@ -391,7 +391,14 @@ export function AttendanceDetailModal({
                     </label>
                     <select
                       value={newStatus}
-                      onChange={(e) => setNewStatus(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setNewStatus(val);
+                        if (val === "IZIN" || val === "SAKIT" || val === "ALPHA") {
+                          setCheckInTime("");
+                          setCheckOutTime("");
+                        }
+                      }}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 font-bold transition-all"
                     >
                       <option value="HADIR">✅ HADIR (Tepat Waktu)</option>
@@ -402,65 +409,67 @@ export function AttendanceDetailModal({
                     </select>
                   </div>
 
-                  {/* Jam Masuk & Jam Pulang */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50/80 p-3 rounded-xl border border-slate-200/70">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="text-[11px] font-semibold text-slate-700 flex items-center gap-1">
-                          <Clock size={12} className="text-emerald-600" />
-                          Jam Masuk (WITA)
-                        </label>
-                        {checkInTime && (
-                          <button
-                            type="button"
-                            onClick={() => handleCheckInTimeChange("")}
-                            className="text-[10px] text-slate-400 hover:text-rose-600"
-                          >
-                            Kosongkan
-                          </button>
-                        )}
-                      </div>
-                      <input
-                        type="time"
-                        value={checkInTime}
-                        onChange={(e) => handleCheckInTimeChange(e.target.value)}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 font-medium"
-                      />
-                      {checkInTime ? (
-                        <p className="text-[10px] mt-1 font-medium text-slate-500">
-                          {checkInTime <= "07:30" ? (
-                            <span className="text-emerald-600">⚡ ≤ 07:30 WITA → Status: <b>HADIR</b></span>
-                          ) : (
-                            <span className="text-amber-600">⚡ &gt; 07:30 WITA → Status: <b>TERLAMBAT</b></span>
+                  {/* Jam Masuk & Jam Pulang - Only for HADIR or TERLAMBAT */}
+                  {(newStatus === "HADIR" || newStatus === "TERLAMBAT") && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50/80 p-3 rounded-xl border border-slate-200/70 animate-in fade-in duration-150">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-[11px] font-semibold text-slate-700 flex items-center gap-1">
+                            <Clock size={12} className="text-emerald-600" />
+                            Jam Masuk (WITA)
+                          </label>
+                          {checkInTime && (
+                            <button
+                              type="button"
+                              onClick={() => handleCheckInTimeChange("")}
+                              className="text-[10px] text-slate-400 hover:text-rose-600"
+                            >
+                              Kosongkan
+                            </button>
                           )}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="text-[11px] font-semibold text-slate-700 flex items-center gap-1">
-                          <Clock size={12} className="text-indigo-600" />
-                          Jam Pulang (WITA)
-                        </label>
-                        {checkOutTime && (
-                          <button
-                            type="button"
-                            onClick={() => setCheckOutTime("")}
-                            className="text-[10px] text-slate-400 hover:text-rose-600"
-                          >
-                            Kosongkan
-                          </button>
-                        )}
+                        </div>
+                        <input
+                          type="time"
+                          value={checkInTime}
+                          onChange={(e) => handleCheckInTimeChange(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 font-medium"
+                        />
+                        {checkInTime ? (
+                          <p className="text-[10px] mt-1 font-medium text-slate-500">
+                            {checkInTime <= "07:30" ? (
+                              <span className="text-emerald-600">⚡ ≤ 07:30 WITA → Status: <b>HADIR</b></span>
+                            ) : (
+                              <span className="text-amber-600">⚡ &gt; 07:30 WITA → Status: <b>TERLAMBAT</b></span>
+                            )}
+                          </p>
+                        ) : null}
                       </div>
-                      <input
-                        type="time"
-                        value={checkOutTime}
-                        onChange={(e) => setCheckOutTime(e.target.value)}
-                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 font-medium"
-                      />
+
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-[11px] font-semibold text-slate-700 flex items-center gap-1">
+                            <Clock size={12} className="text-indigo-600" />
+                            Jam Pulang (WITA)
+                          </label>
+                          {checkOutTime && (
+                            <button
+                              type="button"
+                              onClick={() => setCheckOutTime("")}
+                              className="text-[10px] text-slate-400 hover:text-rose-600"
+                            >
+                              Kosongkan
+                            </button>
+                          )}
+                        </div>
+                        <input
+                          type="time"
+                          value={checkOutTime}
+                          onChange={(e) => setCheckOutTime(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 font-medium"
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
