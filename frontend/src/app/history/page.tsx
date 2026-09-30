@@ -104,6 +104,7 @@ export default function HistoryPage() {
             <option value="HADIR">Hadir</option>
             <option value="TERLAMBAT">Terlambat</option>
             <option value="IZIN">Izin</option>
+            <option value="SAKIT">Sakit</option>
             <option value="ALPHA">Alpha</option>
           </select>
         </div>
@@ -146,7 +147,11 @@ export default function HistoryPage() {
                       ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                       : item.status === "TERLAMBAT"
                       ? "bg-amber-50 text-amber-800 border border-amber-200"
-                      : "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                      : item.status === "SAKIT"
+                      ? "bg-purple-50 text-purple-700 border border-purple-200"
+                      : item.status === "IZIN"
+                      ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                      : "bg-rose-50 text-rose-700 border border-rose-200"
                   }`}
                 >
                   {item.status}

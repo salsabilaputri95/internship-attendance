@@ -56,6 +56,7 @@ interface InternProfile {
     hadir: number;
     terlambat: number;
     izin: number;
+    sakit: number;
     alpha: number;
     total_working_days: number;
     attendance_rate: number;
@@ -66,7 +67,7 @@ interface InternHistoryModalProps {
   isOpen: boolean;
   internId: string | null;
   onClose: () => void;
-  initialFilter?: string; // "ALL" | "HADIR" | "IZIN"
+  initialFilter?: string; // "ALL" | "HADIR" | "IZIN" | "SAKIT" | "ALPHA"
 }
 
 export function InternHistoryModal({
@@ -124,7 +125,7 @@ export function InternHistoryModal({
 
   // Filter logic
   const filteredHistory = history.filter((item) => {
-    // Status Filter: ALL, HADIR, TERLAMBAT, IZIN, ALPHA
+    // Status Filter: ALL, HADIR, TERLAMBAT, IZIN, SAKIT, ALPHA
     let matchStatus = true;
     if (statusFilter === "HADIR") {
       matchStatus = item.status === "HADIR";
@@ -132,6 +133,8 @@ export function InternHistoryModal({
       matchStatus = item.status === "TERLAMBAT";
     } else if (statusFilter === "IZIN") {
       matchStatus = item.status === "IZIN";
+    } else if (statusFilter === "SAKIT") {
+      matchStatus = item.status === "SAKIT";
     } else if (statusFilter === "ALPHA") {
       matchStatus = item.status === "ALPHA";
     }
@@ -149,6 +152,7 @@ export function InternHistoryModal({
     hadir: 0,
     terlambat: 0,
     izin: 0,
+    sakit: 0,
     alpha: 0,
     total_working_days: 0,
     attendance_rate: 0,
@@ -211,6 +215,9 @@ export function InternHistoryModal({
               <span className="px-2 py-0.5 rounded-md bg-white border border-indigo-200 text-[11px] font-bold text-indigo-700 shadow-2xs">
                 {summary.izin} Izin
               </span>
+              <span className="px-2 py-0.5 rounded-md bg-white border border-purple-200 text-[11px] font-bold text-purple-700 shadow-2xs">
+                {summary.sakit || 0} Sakit
+              </span>
               <span className="px-2 py-0.5 rounded-md bg-white border border-rose-200 text-[11px] font-bold text-rose-700 shadow-2xs">
                 {summary.alpha} Alpha
               </span>
@@ -218,7 +225,7 @@ export function InternHistoryModal({
           </div>
         )}
 
-        {/* Filter Toolbar (Semua, Hadir, Terlambat, Izin, Alpha) + Search */}
+        {/* Filter Toolbar (Semua, Hadir, Terlambat, Izin, Sakit, Alpha) + Search */}
         <div className="px-4 sm:px-5 py-3 border-b border-slate-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-2.5">
           {/* Status Filter Tabs */}
           <div className="flex flex-wrap items-center p-1 bg-slate-100 rounded-xl w-full sm:w-auto gap-0.5">
@@ -261,6 +268,16 @@ export function InternHistoryModal({
               }`}
             >
               Izin
+            </button>
+            <button
+              onClick={() => setStatusFilter("SAKIT")}
+              className={`flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                statusFilter === "SAKIT"
+                  ? "bg-white text-purple-700 shadow-2xs"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Sakit
             </button>
             <button
               onClick={() => setStatusFilter("ALPHA")}
@@ -342,6 +359,8 @@ export function InternHistoryModal({
                             ? "bg-amber-50 text-amber-800 border border-amber-200"
                             : item.status === "IZIN"
                             ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                            : item.status === "SAKIT"
+                            ? "bg-purple-50 text-purple-700 border border-purple-200"
                             : item.status === "ALPHA"
                             ? "bg-rose-50 text-rose-700 border border-rose-200"
                             : "bg-slate-100 text-slate-600 border border-slate-200"

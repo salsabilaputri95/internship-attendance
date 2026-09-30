@@ -18,6 +18,7 @@ type TodayStats struct {
 	Hadir        int `json:"hadir"`
 	Terlambat    int `json:"terlambat"`
 	Izin         int `json:"izin"`
+	Sakit        int `json:"sakit"`
 	Alpha        int `json:"alpha"`
 	BelumHadir   int `json:"belum_hadir"`
 }
@@ -376,6 +377,7 @@ func (r *attendanceRepository) GetTodayStats(ctx context.Context, dateStr string
 			COUNT(CASE WHEN a.status = 'HADIR' THEN 1 END) as hadir,
 			COUNT(CASE WHEN a.status = 'TERLAMBAT' THEN 1 END) as terlambat,
 			COUNT(CASE WHEN a.status = 'IZIN' THEN 1 END) as izin,
+			COUNT(CASE WHEN a.status = 'SAKIT' THEN 1 END) as sakit,
 			COUNT(CASE 
 				WHEN a.status = 'ALPHA' THEN 1 
 				WHEN (a.status IS NULL OR a.status = 'BELUM_HADIR') AND $1::date >= '2026-09-01'::date AND $1::date < CURRENT_DATE AND EXTRACT(DOW FROM $1::date) BETWEEN 1 AND 5 THEN 1
@@ -390,7 +392,7 @@ func (r *attendanceRepository) GetTodayStats(ctx context.Context, dateStr string
 
 	var s TodayStats
 	err := r.db.QueryRowContext(ctx, query, dateStr).Scan(
-		&s.TotalInterns, &s.Hadir, &s.Terlambat, &s.Izin, &s.Alpha, &s.BelumHadir,
+		&s.TotalInterns, &s.Hadir, &s.Terlambat, &s.Izin, &s.Sakit, &s.Alpha, &s.BelumHadir,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query today stats: %w", err)

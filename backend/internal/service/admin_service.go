@@ -115,6 +115,7 @@ func (s *adminService) CreateAttendance(ctx context.Context, req *model.AdminCre
 	// Default office location coordinates
 	defaultLat := -5.6783321
 	defaultLng := 119.7498101
+	defaultAcc := 10.0
 	loc, _ := s.locRepo.GetActiveLocation(ctx)
 	if loc != nil {
 		defaultLat = loc.Latitude
@@ -137,14 +138,35 @@ func (s *adminService) CreateAttendance(ctx context.Context, req *model.AdminCre
 		}
 	}
 
-	defaultAcc := 10.0
-	distIn := 5.0
+	var checkInLatPtr, checkInLngPtr, checkInAccPtr, distInPtr *float64
+	var checkOutLatPtr, checkOutLngPtr, checkOutAccPtr, distOutPtr *float64
+
+	isLeaveOrAlpha := statusUpper == "IZIN" || statusUpper == "SAKIT" || statusUpper == "ALPHA"
+
 	if req.DistanceIn != nil {
-		distIn = *req.DistanceIn
+		distInPtr = req.DistanceIn
+		checkInLatPtr = &defaultLat
+		checkInLngPtr = &defaultLng
+		checkInAccPtr = &defaultAcc
+	} else if !isLeaveOrAlpha && checkInTime != nil {
+		defaultDistIn := 5.0
+		distInPtr = &defaultDistIn
+		checkInLatPtr = &defaultLat
+		checkInLngPtr = &defaultLng
+		checkInAccPtr = &defaultAcc
 	}
-	distOut := 5.0
+
 	if req.DistanceOut != nil {
-		distOut = *req.DistanceOut
+		distOutPtr = req.DistanceOut
+		checkOutLatPtr = &defaultLat
+		checkOutLngPtr = &defaultLng
+		checkOutAccPtr = &defaultAcc
+	} else if !isLeaveOrAlpha && checkOutTime != nil {
+		defaultDistOut := 5.0
+		distOutPtr = &defaultDistOut
+		checkOutLatPtr = &defaultLat
+		checkOutLngPtr = &defaultLng
+		checkOutAccPtr = &defaultAcc
 	}
 
 	var notesPtr *string
@@ -158,15 +180,15 @@ func (s *adminService) CreateAttendance(ctx context.Context, req *model.AdminCre
 		UserID:             &req.UserID,
 		AttendanceDate:     req.AttendanceDate,
 		CheckIn:            checkInTime,
-		CheckInLatitude:    &defaultLat,
-		CheckInLongitude:   &defaultLng,
-		CheckInAccuracy:    &defaultAcc,
-		CheckInDistance:    &distIn,
+		CheckInLatitude:    checkInLatPtr,
+		CheckInLongitude:   checkInLngPtr,
+		CheckInAccuracy:    checkInAccPtr,
+		CheckInDistance:    distInPtr,
 		CheckOut:           checkOutTime,
-		CheckOutLatitude:   &defaultLat,
-		CheckOutLongitude:  &defaultLng,
-		CheckOutAccuracy:   &defaultAcc,
-		CheckOutDistance:   &distOut,
+		CheckOutLatitude:   checkOutLatPtr,
+		CheckOutLongitude:  checkOutLngPtr,
+		CheckOutAccuracy:   checkOutAccPtr,
+		CheckOutDistance:   distOutPtr,
 		Status:             model.AttendanceStatus(statusUpper),
 		Notes:              notesPtr,
 	}

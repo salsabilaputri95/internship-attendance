@@ -100,8 +100,9 @@ func (r *internRepository) GetWithUserByID(ctx context.Context, id uuid.UUID) (*
 				COUNT(CASE WHEN a.status = 'HADIR' THEN 1 END) AS hadir,
 				COUNT(CASE WHEN a.status = 'TERLAMBAT' THEN 1 END) AS terlambat,
 				COUNT(CASE WHEN a.status = 'IZIN' THEN 1 END) AS izin,
+				COUNT(CASE WHEN a.status = 'SAKIT' THEN 1 END) AS sakit,
 				COUNT(CASE WHEN a.status = 'ALPHA' THEN 1 END) AS explicit_alpha,
-				COUNT(CASE WHEN a.status IN ('HADIR', 'TERLAMBAT', 'IZIN', 'ALPHA') AND EXTRACT(DOW FROM a.attendance_date) BETWEEN 1 AND 5 THEN 1 END) AS attended_working_days
+				COUNT(CASE WHEN a.status IN ('HADIR', 'TERLAMBAT', 'IZIN', 'SAKIT', 'ALPHA') AND EXTRACT(DOW FROM a.attendance_date) BETWEEN 1 AND 5 THEN 1 END) AS attended_working_days
 			FROM attendance a
 			JOIN interns i ON a.intern_id = i.id
 			WHERE a.attendance_date >= GREATEST(i.start_date, '2026-09-01'::date) 
@@ -117,6 +118,7 @@ func (r *internRepository) GetWithUserByID(ctx context.Context, id uuid.UUID) (*
 			COALESCE(att.hadir, 0) AS hadir,
 			COALESCE(att.terlambat, 0) AS terlambat,
 			COALESCE(att.izin, 0) AS izin,
+			COALESCE(att.sakit, 0) AS sakit,
 			COALESCE(att.explicit_alpha, 0) + GREATEST(0, COALESCE(w.total_working_days, 0) - COALESCE(att.attended_working_days, 0)) AS alpha
 		FROM interns i
 		JOIN users u ON i.user_id = u.id
@@ -128,11 +130,11 @@ func (r *internRepository) GetWithUserByID(ctx context.Context, id uuid.UUID) (*
 	`
 
 	var iu model.InternWithUser
-	var totalDays, hadir, terlambat, izin, alpha int
+	var totalDays, hadir, terlambat, izin, sakit, alpha int
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&iu.ID, &iu.UserID, &iu.Name, &iu.Email, &iu.University, &iu.Major, &iu.Phone,
 		&iu.SupervisorID, &iu.SupervisorName, &iu.StartDate, &iu.EndDate, &iu.Status,
-		&totalDays, &hadir, &terlambat, &izin, &alpha,
+		&totalDays, &hadir, &terlambat, &izin, &sakit, &alpha,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -153,6 +155,7 @@ func (r *internRepository) GetWithUserByID(ctx context.Context, id uuid.UUID) (*
 		Hadir:            hadir,
 		Terlambat:        terlambat,
 		Izin:             izin,
+		Sakit:            sakit,
 		Alpha:            alpha,
 		TotalWorkingDays: totalDays,
 		AttendanceRate:   rate,
@@ -185,8 +188,9 @@ func (r *internRepository) ListAllInterns(ctx context.Context, status string) ([
 				COUNT(CASE WHEN a.status = 'HADIR' THEN 1 END) AS hadir,
 				COUNT(CASE WHEN a.status = 'TERLAMBAT' THEN 1 END) AS terlambat,
 				COUNT(CASE WHEN a.status = 'IZIN' THEN 1 END) AS izin,
+				COUNT(CASE WHEN a.status = 'SAKIT' THEN 1 END) AS sakit,
 				COUNT(CASE WHEN a.status = 'ALPHA' THEN 1 END) AS explicit_alpha,
-				COUNT(CASE WHEN a.status IN ('HADIR', 'TERLAMBAT', 'IZIN', 'ALPHA') AND EXTRACT(DOW FROM a.attendance_date) BETWEEN 1 AND 5 THEN 1 END) AS attended_working_days
+				COUNT(CASE WHEN a.status IN ('HADIR', 'TERLAMBAT', 'IZIN', 'SAKIT', 'ALPHA') AND EXTRACT(DOW FROM a.attendance_date) BETWEEN 1 AND 5 THEN 1 END) AS attended_working_days
 			FROM attendance a
 			JOIN interns i ON a.intern_id = i.id
 			WHERE a.attendance_date >= GREATEST(i.start_date, '2026-09-01'::date) 
@@ -201,6 +205,7 @@ func (r *internRepository) ListAllInterns(ctx context.Context, status string) ([
 			COALESCE(att.hadir, 0) AS hadir,
 			COALESCE(att.terlambat, 0) AS terlambat,
 			COALESCE(att.izin, 0) AS izin,
+			COALESCE(att.sakit, 0) AS sakit,
 			COALESCE(att.explicit_alpha, 0) + GREATEST(0, COALESCE(w.total_working_days, 0) - COALESCE(att.attended_working_days, 0)) AS alpha
 		FROM interns i
 		JOIN users u ON i.user_id = u.id
@@ -220,11 +225,11 @@ func (r *internRepository) ListAllInterns(ctx context.Context, status string) ([
 	var list []model.InternWithUser
 	for rows.Next() {
 		var iu model.InternWithUser
-		var totalDays, hadir, terlambat, izin, alpha int
+		var totalDays, hadir, terlambat, izin, sakit, alpha int
 		if err := rows.Scan(
 			&iu.ID, &iu.UserID, &iu.Name, &iu.Email, &iu.University, &iu.Major, &iu.Phone,
 			&iu.SupervisorID, &iu.SupervisorName, &iu.StartDate, &iu.EndDate, &iu.Status,
-			&totalDays, &hadir, &terlambat, &izin, &alpha,
+			&totalDays, &hadir, &terlambat, &izin, &sakit, &alpha,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan intern row: %w", err)
 		}
@@ -241,6 +246,7 @@ func (r *internRepository) ListAllInterns(ctx context.Context, status string) ([
 			Hadir:            hadir,
 			Terlambat:        terlambat,
 			Izin:             izin,
+			Sakit:            sakit,
 			Alpha:            alpha,
 			TotalWorkingDays: totalDays,
 			AttendanceRate:   rate,

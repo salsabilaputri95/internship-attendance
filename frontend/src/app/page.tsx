@@ -12,7 +12,9 @@ export default function HomePage() {
     if (!loading) {
       if (!user) {
         router.push("/login");
-      } else if (user.role === "mentor" || user.role === "admin") {
+      } else if (user.role === "admin") {
+        router.push("/admin");
+      } else if (user.role === "mentor") {
         router.push("/mentor");
       } else {
         router.push("/dashboard");

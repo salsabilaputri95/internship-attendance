@@ -32,6 +32,7 @@ type AttendanceSummary struct {
 	Hadir            int     `json:"hadir"`
 	Terlambat        int     `json:"terlambat"`
 	Izin             int     `json:"izin"`
+	Sakit            int     `json:"sakit"`
 	Alpha            int     `json:"alpha"`
 	TotalWorkingDays int     `json:"total_working_days"`
 	AttendanceRate   float64 `json:"attendance_rate"`

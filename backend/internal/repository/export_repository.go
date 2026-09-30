@@ -42,8 +42,8 @@ func (r *exportRepository) GetExportData(ctx context.Context, internID *string, 
 	baseQuery := `
 		SELECT
 			u.name,
-			i.university,
-			i.major,
+			COALESCE(i.university, 'BPS Kabupaten Jeneponto') AS university,
+			COALESCE(i.major, CASE WHEN u.role = 'mentor' THEN 'Pembimbing Lapangan' ELSE 'Staf' END) AS major,
 			a.attendance_date::text,
 			a.status,
 			a.check_in,
@@ -52,13 +52,13 @@ func (r *exportRepository) GetExportData(ctx context.Context, internID *string, 
 			a.check_out_distance,
 			a.notes
 		FROM attendance a
-		JOIN interns i ON a.intern_id = i.id
-		JOIN users u ON i.user_id = u.id
+		JOIN users u ON COALESCE(a.user_id, (SELECT user_id FROM interns WHERE id = a.intern_id)) = u.id
+		LEFT JOIN interns i ON (a.intern_id = i.id OR i.user_id = u.id)
 		WHERE a.attendance_date BETWEEN $1::date AND $2::date
 	`
 
 	if internID != nil && *internID != "" {
-		query = baseQuery + " AND i.id = $3 ORDER BY a.attendance_date ASC, u.name ASC"
+		query = baseQuery + " AND (a.intern_id = $3::uuid OR i.id = $3::uuid) ORDER BY a.attendance_date ASC, u.name ASC"
 		args = []interface{}{startDate, endDate, *internID}
 	} else {
 		query = baseQuery + " ORDER BY a.attendance_date ASC, u.name ASC"

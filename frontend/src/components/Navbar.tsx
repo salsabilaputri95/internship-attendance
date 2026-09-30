@@ -142,8 +142,10 @@ export function Navbar() {
               </div>
               <div>
                 <div className="text-xs font-bold text-slate-900 leading-tight">{user.name}</div>
-                <div className="text-[10px] text-indigo-600 font-semibold mt-0.5">
-                  {isMentor ? "Mentor / Pembimbing" : "Peserta Magang"}
+                <div className={`text-[10px] font-semibold mt-0.5 ${
+                  isAdmin ? "text-purple-600" : isMentor ? "text-indigo-600" : "text-emerald-600"
+                }`}>
+                  {isAdmin ? "Super Admin" : isMentor ? "Mentor / Pembimbing" : "Peserta Magang"}
                 </div>
               </div>
             </div>

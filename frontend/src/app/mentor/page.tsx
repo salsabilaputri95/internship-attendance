@@ -16,6 +16,7 @@ import {
   RefreshCw,
   MapPin,
   Sparkles,
+  HeartPulse,
 } from "lucide-react";
 
 interface TodayStats {
@@ -23,6 +24,7 @@ interface TodayStats {
   hadir: number;
   terlambat: number;
   izin: number;
+  sakit: number;
   alpha: number;
   belum_hadir: number;
 }
@@ -198,14 +200,14 @@ export default function MentorDashboardPage() {
         </div>
 
         <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-600 mb-0.5">
-            <span className="text-[11px] font-semibold">Belum Hadir</span>
-            <Clock size={13} className="text-slate-400" />
+          <div className="flex items-center justify-between text-purple-700 mb-0.5">
+            <span className="text-[11px] font-semibold">Sakit</span>
+            <HeartPulse size={13} className="text-purple-600" />
           </div>
-          <div className="text-xl font-bold text-slate-700">
-            {stats?.belum_hadir || 0}
+          <div className="text-xl font-bold text-purple-600">
+            {stats?.sakit || 0}
           </div>
-          <div className="text-[10px] text-slate-400 font-medium">Belum Absen</div>
+          <div className="text-[10px] text-slate-400 font-medium">Keterangan Sakit</div>
         </div>
       </div>
 
@@ -248,6 +250,7 @@ export default function MentorDashboardPage() {
                 <option value="HADIR">Hadir</option>
                 <option value="TERLAMBAT">Terlambat</option>
                 <option value="IZIN">Izin</option>
+                <option value="SAKIT">Sakit</option>
                 <option value="ALPHA">Alpha</option>
                 <option value="BELUM_HADIR">Belum Hadir</option>
               </select>
@@ -337,6 +340,8 @@ export default function MentorDashboardPage() {
                               ? "bg-amber-50 text-amber-800 border border-amber-200"
                               : item.status === "IZIN"
                               ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                              : item.status === "SAKIT"
+                              ? "bg-purple-50 text-purple-700 border border-purple-200"
                               : item.status === "ALPHA"
                               ? "bg-rose-50 text-rose-700 border border-rose-200"
                               : "bg-slate-100 text-slate-600 border border-slate-200"

@@ -28,6 +28,7 @@ interface AttendanceSummary {
   hadir: number;
   terlambat: number;
   izin: number;
+  sakit: number;
   alpha: number;
   total_working_days: number;
   attendance_rate: number;
@@ -210,6 +211,7 @@ export default function InternsDirectoryPage() {
               hadir: 0,
               terlambat: 0,
               izin: 0,
+              sakit: 0,
               alpha: 0,
               total_working_days: 0,
               attendance_rate: 0,
@@ -308,12 +310,12 @@ export default function InternsDirectoryPage() {
                     </div>
                   </div>
 
-                  {/* 4 Stat Tiles Grid (Clickable to Filter Modal) */}
-                  <div className="grid grid-cols-4 gap-2">
+                  {/* 5 Stat Tiles Grid (Clickable to Filter Modal) */}
+                  <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                     {/* Hadir */}
                     <button
                       onClick={() => handleOpenHistory(intern.id, "HADIR")}
-                      className="bg-white border border-emerald-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-emerald-300 hover:bg-emerald-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      className="bg-white border border-emerald-200/80 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center shadow-2xs hover:border-emerald-300 hover:bg-emerald-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       title="Lihat riwayat Hadir"
                     >
                       <div className="text-[10px] font-medium text-emerald-700">
@@ -327,7 +329,7 @@ export default function InternsDirectoryPage() {
                     {/* Terlambat */}
                     <button
                       onClick={() => handleOpenHistory(intern.id, "TERLAMBAT")}
-                      className="bg-white border border-amber-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-amber-300 hover:bg-amber-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      className="bg-white border border-amber-200/80 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center shadow-2xs hover:border-amber-300 hover:bg-amber-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       title="Lihat riwayat Terlambat"
                     >
                       <div className="text-[10px] font-medium text-amber-800">
@@ -341,7 +343,7 @@ export default function InternsDirectoryPage() {
                     {/* Izin */}
                     <button
                       onClick={() => handleOpenHistory(intern.id, "IZIN")}
-                      className="bg-white border border-indigo-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-indigo-300 hover:bg-indigo-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      className="bg-white border border-indigo-200/80 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center shadow-2xs hover:border-indigo-300 hover:bg-indigo-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       title="Lihat riwayat Izin"
                     >
                       <div className="text-[10px] font-medium text-indigo-700">
@@ -352,10 +354,24 @@ export default function InternsDirectoryPage() {
                       </div>
                     </button>
 
+                    {/* Sakit */}
+                    <button
+                      onClick={() => handleOpenHistory(intern.id, "SAKIT")}
+                      className="bg-white border border-purple-200/80 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center shadow-2xs hover:border-purple-300 hover:bg-purple-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      title="Lihat riwayat Sakit"
+                    >
+                      <div className="text-[10px] font-medium text-purple-700">
+                        Sakit
+                      </div>
+                      <div className="text-sm font-bold text-purple-600 tracking-tight">
+                        {summary.sakit || 0}
+                      </div>
+                    </button>
+
                     {/* Alpha */}
                     <button
                       onClick={() => handleOpenHistory(intern.id, "ALPHA")}
-                      className="bg-white border border-rose-200/80 rounded-xl py-1.5 px-2 flex flex-col items-center justify-center text-center shadow-2xs hover:border-rose-300 hover:bg-rose-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      className="bg-white border border-rose-200/80 rounded-xl py-1.5 px-1 flex flex-col items-center justify-center text-center shadow-2xs hover:border-rose-300 hover:bg-rose-50/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       title="Lihat riwayat Alpha"
                     >
                       <div className="text-[10px] font-medium text-rose-700">
@@ -396,6 +412,15 @@ export default function InternsDirectoryPage() {
                               className="bg-indigo-400 h-full rounded-full transition-all duration-500"
                               style={{
                                 width: `${(summary.izin / summary.total_working_days) * 100}%`,
+                              }}
+                            />
+                          )}
+                          {(summary.sakit || 0) > 0 && (
+                            <div
+                              title={`Sakit: ${summary.sakit} hari`}
+                              className="bg-purple-400 h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${((summary.sakit || 0) / summary.total_working_days) * 100}%`,
                               }}
                             />
                           )}

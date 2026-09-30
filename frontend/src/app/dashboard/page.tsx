@@ -19,6 +19,7 @@ import {
   Sparkles,
   MapPin,
   FileText,
+  Stethoscope,
 } from "lucide-react";
 
 interface TodayData {
@@ -45,6 +46,7 @@ interface TodayData {
     hadir: number;
     terlambat: number;
     izin: number;
+    sakit: number;
     alpha: number;
     total_absen: number;
   };
@@ -58,6 +60,7 @@ export default function InternDashboard() {
   const [loadingData, setLoadingData] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [leaveModalOpen, setLeaveModalOpen] = useState(false);
+  const [leaveModalType, setLeaveModalType] = useState<"izin" | "sakit">("izin");
   const [modalType, setModalType] = useState<"in" | "out">("in");
   const [currentTime, setCurrentTime] = useState<string>("");
 
@@ -110,6 +113,7 @@ export default function InternDashboard() {
 
   const attendance = todayData?.attendance;
   const isLeave = attendance?.status === "IZIN";
+  const isSick = attendance?.status === "SAKIT";
   const hasCheckedIn = !!attendance?.check_in;
   const hasCheckedOut = !!attendance?.check_out;
 
@@ -178,6 +182,8 @@ export default function InternDashboard() {
                   ? "bg-amber-50 text-amber-800 border border-amber-200"
                   : attendance.status === "IZIN"
                   ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                  : attendance.status === "SAKIT"
+                  ? "bg-purple-50 text-purple-700 border border-purple-200"
                   : "bg-rose-50 text-rose-700 border border-rose-200"
               }`}
             >
@@ -191,10 +197,28 @@ export default function InternDashboard() {
             <div className="w-6 h-6 rounded-full border-2 border-slate-200 border-t-indigo-600 animate-spin" />
             <p className="text-xs font-medium">Memuat status presensi...</p>
           </div>
+        ) : isSick ? (
+          /* Intern on Sick Leave */
+          <div className="py-6 flex flex-col items-center justify-center text-center space-y-2.5 bg-purple-50/60 border border-purple-200 rounded-xl p-5 animate-in fade-in">
+            <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shadow-2xs">
+              <Stethoscope size={20} />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">
+                Keterangan Sakit Hari Ini Tercatat
+              </h4>
+              <p className="text-xs text-slate-600 mt-0.5 max-w-md">
+                Keterangan: <span className="font-semibold text-purple-900">&ldquo;{attendance?.notes || "Sakit"}&rdquo;</span>
+              </p>
+              <p className="text-[11px] text-purple-600 mt-1 font-medium">
+                Semoga lekas pulih dan sehat kembali!
+              </p>
+            </div>
+          </div>
         ) : isLeave ? (
           /* Intern on Leave */
-          <div className="py-6 flex flex-col items-center justify-center text-center space-y-2.5 bg-indigo-50/50 border border-indigo-100 rounded-xl p-5">
-            <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center">
+          <div className="py-6 flex flex-col items-center justify-center text-center space-y-2.5 bg-indigo-50/50 border border-indigo-100 rounded-xl p-5 animate-in fade-in">
+            <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center shadow-2xs">
               <FileText size={20} />
             </div>
             <div>
@@ -293,24 +317,38 @@ export default function InternDashboard() {
               </div>
             </div>
 
-            {/* Action Buttons & Leave Submission */}
+            {/* Action Buttons & Leave/Sakit Submission */}
             <div className="space-y-2.5">
               {!hasCheckedIn ? (
                 <div className="flex flex-col sm:flex-row gap-2.5">
                   <button
                     onClick={() => handleOpenAttendance("in")}
-                    className="flex-1 py-3 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.99]"
+                    className="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.99]"
                   >
                     <LogIn size={15} />
-                    <span>Lakukan Absen Masuk Sekarang</span>
+                    <span>Lakukan Absen Masuk</span>
                   </button>
 
                   <button
-                    onClick={() => setLeaveModalOpen(true)}
-                    className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-700 font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
+                    onClick={() => {
+                      setLeaveModalType("izin");
+                      setLeaveModalOpen(true);
+                    }}
+                    className="py-3 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors"
                   >
-                    <FileText size={14} />
-                    <span>Ajukan Izin / Sakit</span>
+                    <FileText size={14} className="text-indigo-600" />
+                    <span>Ajukan Izin</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setLeaveModalType("sakit");
+                      setLeaveModalOpen(true);
+                    }}
+                    className="py-3 px-3.5 rounded-xl bg-purple-50 hover:bg-purple-100/80 border border-purple-200 text-purple-800 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <Stethoscope size={14} className="text-purple-600" />
+                    <span>Ajukan Sakit</span>
                   </button>
                 </div>
               ) : !hasCheckedOut ? (
@@ -347,34 +385,45 @@ export default function InternDashboard() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+          <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-2xs">
             <div className="text-[11px] font-semibold text-slate-500">Hadir</div>
-            <div className="text-xl font-bold text-emerald-600 mt-0.5">
+            <div className="text-lg font-bold text-emerald-600 mt-0.5">
               {todayData?.summary.hadir || 0}
             </div>
             <div className="text-[10px] text-slate-400 font-medium mt-0.5">Tepat Waktu</div>
           </div>
 
-          <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-2xs">
             <div className="text-[11px] font-semibold text-slate-500">Terlambat</div>
-            <div className="text-xl font-bold text-amber-600 mt-0.5">
+            <div className="text-lg font-bold text-amber-600 mt-0.5">
               {todayData?.summary.terlambat || 0}
             </div>
             <div className="text-[10px] text-slate-400 font-medium mt-0.5">&gt; 07:30 WITA</div>
           </div>
 
-          <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-2xs">
             <div className="text-[11px] font-semibold text-slate-500">Izin</div>
-            <div className="text-xl font-bold text-indigo-600 mt-0.5">
+            <div className="text-lg font-bold text-indigo-600 mt-0.5">
               {todayData?.summary.izin || 0}
             </div>
             <div className="text-[10px] text-slate-400 font-medium mt-0.5">Disetujui</div>
           </div>
 
-          <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs">
+          <div className="bg-white border border-purple-200/80 rounded-xl p-3 shadow-2xs bg-purple-50/20">
+            <div className="text-[11px] font-semibold text-purple-700 flex items-center gap-1">
+              <Stethoscope size={11} />
+              <span>Sakit</span>
+            </div>
+            <div className="text-lg font-bold text-purple-700 mt-0.5">
+              {todayData?.summary.sakit || 0}
+            </div>
+            <div className="text-[10px] text-purple-400 font-medium mt-0.5">Keterangan Sakit</div>
+          </div>
+
+          <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-2xs">
             <div className="text-[11px] font-semibold text-slate-500">Alpha</div>
-            <div className="text-xl font-bold text-rose-600 mt-0.5">
+            <div className="text-lg font-bold text-rose-600 mt-0.5">
               {todayData?.summary.alpha || 0}
             </div>
             <div className="text-[10px] text-slate-400 font-medium mt-0.5">Tanpa Keterangan</div>
@@ -398,9 +447,10 @@ export default function InternDashboard() {
         radius={officeRadius}
       />
 
-      {/* Leave Submission Modal */}
+      {/* Leave / Sakit Submission Modal */}
       <LeaveModal
         isOpen={leaveModalOpen}
+        initialType={leaveModalType}
         onClose={() => setLeaveModalOpen(false)}
         onSuccess={() => {
           fetchTodayData();

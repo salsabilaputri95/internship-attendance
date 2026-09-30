@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -43,6 +44,7 @@ type AttendanceSummary struct {
 	Hadir      int `json:"hadir"`
 	Terlambat  int `json:"terlambat"`
 	Izin       int `json:"izin"`
+	Sakit      int `json:"sakit"`
 	Alpha      int `json:"alpha"`
 	TotalAbsen int `json:"total_absen"`
 }
@@ -58,6 +60,7 @@ type LeaveRequest struct {
 	InternID uuid.UUID `json:"intern_id"`
 	Date     string    `json:"date"` // YYYY-MM-DD (optional, defaults to today)
 	Category string    `json:"category"`
+	Type     string    `json:"type"` // "IZIN" or "SAKIT"
 	Reason   string    `json:"reason"`
 }
 
@@ -301,25 +304,36 @@ func (s *attendanceService) SubmitLeave(ctx context.Context, req *LeaveRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("error checking existing attendance: %w", err)
 	}
-	if existing != nil && (existing.CheckIn != nil || existing.Status == model.StatusIzin) {
-		return nil, errors.New("data presensi/izin sudah tercatat untuk tanggal ini")
+	if existing != nil && (existing.CheckIn != nil || existing.Status == model.StatusIzin || existing.Status == model.AttendanceStatus("SAKIT")) {
+		return nil, errors.New("data presensi/izin/sakit sudah tercatat untuk tanggal ini")
+	}
+
+	status := model.StatusIzin
+	reqType := strings.ToUpper(strings.TrimSpace(req.Type))
+	reqCat := strings.ToUpper(strings.TrimSpace(req.Category))
+	if reqType == "SAKIT" || reqCat == "SAKIT" || strings.HasPrefix(reqCat, "SAKIT") {
+		status = model.AttendanceStatus("SAKIT")
 	}
 
 	fullNotes := fmt.Sprintf("[%s] %s", req.Category, req.Reason)
 	if req.Category == "" {
-		fullNotes = req.Reason
+		if status == model.AttendanceStatus("SAKIT") {
+			fullNotes = fmt.Sprintf("[Sakit] %s", req.Reason)
+		} else {
+			fullNotes = fmt.Sprintf("[Izin] %s", req.Reason)
+		}
 	}
 
 	att := &model.Attendance{
 		ID:             uuid.New(),
 		InternID:       &req.InternID,
 		AttendanceDate: dateStr,
-		Status:         model.StatusIzin,
+		Status:         status,
 		Notes:          &fullNotes,
 	}
 
 	if err := s.attRepo.CreateCheckIn(ctx, att); err != nil {
-		return nil, fmt.Errorf("gagal menyimpan data pengajuan izin: %w", err)
+		return nil, fmt.Errorf("gagal menyimpan data pengajuan: %w", err)
 	}
 
 	return att, nil
@@ -335,6 +349,8 @@ func calculateSummary(history []model.Attendance) AttendanceSummary {
 			sum.Terlambat++
 		case model.StatusIzin:
 			sum.Izin++
+		case model.AttendanceStatus("SAKIT"):
+			sum.Sakit++
 		case model.StatusAlpha:
 			sum.Alpha++
 		}
