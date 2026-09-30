@@ -74,6 +74,8 @@ export function AttendanceDetailModal({
 
   // Correction Form State
   const [newStatus, setNewStatus] = useState<string>("");
+  const [checkInTime, setCheckInTime] = useState<string>("");
+  const [checkOutTime, setCheckOutTime] = useState<string>("");
   const [newNotes, setNewNotes] = useState<string>("");
   const [reason, setReason] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
@@ -100,6 +102,24 @@ export function AttendanceDetailModal({
         setDetail(res.data);
         setNewStatus(res.data.status);
         setNewNotes(res.data.notes || "");
+
+        if (res.data.check_in) {
+          const d = new Date(res.data.check_in);
+          const hh = String(d.getHours()).padStart(2, "0");
+          const mm = String(d.getMinutes()).padStart(2, "0");
+          setCheckInTime(`${hh}:${mm}`);
+        } else {
+          setCheckInTime("");
+        }
+
+        if (res.data.check_out) {
+          const d = new Date(res.data.check_out);
+          const hh = String(d.getHours()).padStart(2, "0");
+          const mm = String(d.getMinutes()).padStart(2, "0");
+          setCheckOutTime(`${hh}:${mm}`);
+        } else {
+          setCheckOutTime("");
+        }
       } else {
         throw new Error(res.message || "Gagal memuat detail kehadiran");
       }
@@ -124,6 +144,8 @@ export function AttendanceDetailModal({
     try {
       const res = await api.post(`/mentor/attendance/${attendanceId}/correct`, {
         status: newStatus,
+        check_in: checkInTime ? checkInTime : "",
+        check_out: checkOutTime ? checkOutTime : "",
         notes: newNotes,
         reason: reason.trim(),
       });
@@ -381,23 +403,75 @@ export function AttendanceDetailModal({
                     <select
                       value={newStatus}
                       onChange={(e) => setNewStatus(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 font-medium transition-all"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 font-bold transition-all"
                     >
-                      <option value="HADIR">HADIR (Tepat Waktu)</option>
-                      <option value="TERLAMBAT">TERLAMBAT</option>
-                      <option value="IZIN">IZIN</option>
-                      <option value="ALPHA">ALPHA</option>
+                      <option value="HADIR">✅ HADIR (Tepat Waktu)</option>
+                      <option value="TERLAMBAT">⏰ TERLAMBAT (&gt; 07:30 WITA)</option>
+                      <option value="IZIN">📝 IZIN</option>
+                      <option value="SAKIT">🏥 SAKIT</option>
+                      <option value="ALPHA">❌ ALPHA (Tidak Hadir)</option>
                     </select>
+                  </div>
+
+                  {/* Jam Masuk & Jam Pulang */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50/80 p-3 rounded-xl border border-slate-200/70">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[11px] font-semibold text-slate-700 flex items-center gap-1">
+                          <Clock size={12} className="text-emerald-600" />
+                          Jam Masuk (WITA)
+                        </label>
+                        {checkInTime && (
+                          <button
+                            type="button"
+                            onClick={() => setCheckInTime("")}
+                            className="text-[10px] text-slate-400 hover:text-rose-600"
+                          >
+                            Kosongkan
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="time"
+                        value={checkInTime}
+                        onChange={(e) => setCheckInTime(e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[11px] font-semibold text-slate-700 flex items-center gap-1">
+                          <Clock size={12} className="text-indigo-600" />
+                          Jam Pulang (WITA)
+                        </label>
+                        {checkOutTime && (
+                          <button
+                            type="button"
+                            onClick={() => setCheckOutTime("")}
+                            className="text-[10px] text-slate-400 hover:text-rose-600"
+                          >
+                            Kosongkan
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="time"
+                        value={checkOutTime}
+                        onChange={(e) => setCheckOutTime(e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 font-medium"
+                      />
+                    </div>
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Catatan Tambahan
+                      Catatan / Keterangan
                     </label>
                     <textarea
                       value={newNotes}
                       onChange={(e) => setNewNotes(e.target.value)}
-                      placeholder="Catatan penugasan / dispensasi khusus..."
+                      placeholder="Catatan penugasan / dispensasi khusus / alasan..."
                       rows={2}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 transition-all"
                     />

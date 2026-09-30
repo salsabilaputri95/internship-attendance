@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,8 +15,8 @@ import (
 )
 
 type CorrectionRequest struct {
-	CheckIn  *string                `json:"check_in,omitempty"`  // ISO RFC3339 string
-	CheckOut *string                `json:"check_out,omitempty"` // ISO RFC3339 string
+	CheckIn  *string                `json:"check_in,omitempty"`  // "07:30", "07:30:00", or ISO RFC3339 string
+	CheckOut *string                `json:"check_out,omitempty"` // "16:00", "16:00:00", or ISO RFC3339 string
 	Status   model.AttendanceStatus `json:"status"`
 	Notes    *string                `json:"notes,omitempty"`
 	Reason   string                 `json:"reason"`
@@ -157,17 +158,25 @@ func (s *mentorService) CorrectAttendance(ctx context.Context, attendanceID uuid
 		existing.Notes = req.Notes
 	}
 
-	if req.CheckIn != nil && *req.CheckIn != "" {
-		parsedCheckIn, err := time.Parse(time.RFC3339, *req.CheckIn)
-		if err == nil {
-			existing.CheckIn = &parsedCheckIn
+	if req.CheckIn != nil {
+		if strings.TrimSpace(*req.CheckIn) == "" {
+			existing.CheckIn = nil
+		} else {
+			parsedCheckIn, err := parseTimeForDate(existing.AttendanceDate, *req.CheckIn)
+			if err == nil {
+				existing.CheckIn = &parsedCheckIn
+			}
 		}
 	}
 
-	if req.CheckOut != nil && *req.CheckOut != "" {
-		parsedCheckOut, err := time.Parse(time.RFC3339, *req.CheckOut)
-		if err == nil {
-			existing.CheckOut = &parsedCheckOut
+	if req.CheckOut != nil {
+		if strings.TrimSpace(*req.CheckOut) == "" {
+			existing.CheckOut = nil
+		} else {
+			parsedCheckOut, err := parseTimeForDate(existing.AttendanceDate, *req.CheckOut)
+			if err == nil {
+				existing.CheckOut = &parsedCheckOut
+			}
 		}
 	}
 
@@ -202,6 +211,40 @@ func (s *mentorService) CorrectAttendance(ctx context.Context, attendanceID uuid
 	}
 
 	return existing, nil
+}
+
+func parseTimeForDate(dateStr, timeStr string) (time.Time, error) {
+	timeStr = strings.TrimSpace(timeStr)
+
+	// Case 1: Already full RFC3339 / ISO
+	if t, err := time.Parse(time.RFC3339, timeStr); err == nil {
+		return t, nil
+	}
+
+	// Case 2: Full datetime string "2006-01-02 15:04:05" or with tz
+	if t, err := time.Parse("2006-01-02 15:04:05-07", timeStr); err == nil {
+		return t, nil
+	}
+	if t, err := time.Parse("2006-01-02 15:04:05", timeStr); err == nil {
+		loc := time.FixedZone("WITA", 8*3600)
+		return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), 0, loc), nil
+	}
+
+	// Case 3: "15:04:05" or "15:04"
+	var hour, min, sec int
+	if _, err := fmt.Sscanf(timeStr, "%d:%d:%d", &hour, &min, &sec); err != nil {
+		if _, err := fmt.Sscanf(timeStr, "%d:%d", &hour, &min); err != nil {
+			return time.Time{}, errors.New("format jam tidak valid (gunakan format JJ:MM)")
+		}
+	}
+
+	var year, month, day int
+	if _, err := fmt.Sscanf(dateStr, "%d-%d-%d", &year, &month, &day); err != nil {
+		return time.Time{}, errors.New("format tanggal tidak valid")
+	}
+
+	loc := time.FixedZone("WITA", 8*3600)
+	return time.Date(year, time.Month(month), day, hour, min, sec, 0, loc), nil
 }
 
 func (s *mentorService) GetInterns(ctx context.Context, status string) ([]model.InternWithUser, error) {
