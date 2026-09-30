@@ -147,6 +147,12 @@ func (s *adminService) CreateAttendance(ctx context.Context, req *model.AdminCre
 		distOut = *req.DistanceOut
 	}
 
+	var notesPtr *string
+	if req.Notes != nil && strings.TrimSpace(*req.Notes) != "" {
+		cleaned := strings.TrimSpace(*req.Notes)
+		notesPtr = &cleaned
+	}
+
 	newAtt := model.Attendance{
 		ID:                 uuid.New(),
 		UserID:             &req.UserID,
@@ -162,7 +168,7 @@ func (s *adminService) CreateAttendance(ctx context.Context, req *model.AdminCre
 		CheckOutAccuracy:   &defaultAcc,
 		CheckOutDistance:   &distOut,
 		Status:             model.AttendanceStatus(statusUpper),
-		Notes:              req.Notes,
+		Notes:              notesPtr,
 	}
 
 	if err := s.adminRepo.CreateAttendance(ctx, &newAtt); err != nil {
@@ -246,9 +252,16 @@ func (s *adminService) UpdateAttendance(ctx context.Context, id uuid.UUID, admin
 		distOut = req.DistanceOut
 	}
 
-	notes := existing.Notes
+	var notes *string
 	if req.Notes != nil {
-		notes = req.Notes
+		if strings.TrimSpace(*req.Notes) != "" {
+			cleanNotes := strings.TrimSpace(*req.Notes)
+			notes = &cleanNotes
+		} else {
+			notes = nil // Explicitly delete/set to NULL in database
+		}
+	} else {
+		notes = existing.Notes
 	}
 
 	updatedAtt := model.Attendance{

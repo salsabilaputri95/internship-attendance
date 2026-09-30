@@ -174,12 +174,12 @@ export function AdminAttendanceModal({
         const res = await api.post("/admin/attendance", {
           user_id: selectedUserId,
           attendance_date: attendanceDate,
-          check_in_time: checkInTime ? checkInTime : undefined,
-          check_out_time: checkOutTime ? checkOutTime : undefined,
+          check_in_time: checkInTime ? checkInTime : "",
+          check_out_time: checkOutTime ? checkOutTime : "",
           distance_in: payloadDistIn,
           distance_out: payloadDistOut,
           status: status,
-          notes: notes ? notes : undefined,
+          notes: notes,
         });
 
         if (!res.success) {
@@ -188,12 +188,12 @@ export function AdminAttendanceModal({
       } else if (mode === "edit" && attendanceData) {
         const res = await api.put(`/admin/attendance/${attendanceData.id}`, {
           attendance_date: attendanceDate,
-          check_in_time: checkInTime ? checkInTime : undefined,
-          check_out_time: checkOutTime ? checkOutTime : undefined,
+          check_in_time: checkInTime ? checkInTime : "",
+          check_out_time: checkOutTime ? checkOutTime : "",
           distance_in: payloadDistIn,
           distance_out: payloadDistOut,
           status: status,
-          notes: notes ? notes : undefined,
+          notes: notes,
           reason: reason,
         });
 
