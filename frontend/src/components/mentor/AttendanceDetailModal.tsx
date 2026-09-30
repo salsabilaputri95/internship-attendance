@@ -67,8 +67,23 @@ export function AttendanceDetailModal({
   const [submitting, setSubmitting] = useState(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
-  // Photo Zoom Lightbox
   const [zoomedPhoto, setZoomedPhoto] = useState<string | null>(null);
+
+  // Auto-adjust status based on check-in time
+  const handleCheckInTimeChange = (timeVal: string) => {
+    setCheckInTime(timeVal);
+    if (!timeVal.trim()) {
+      if (newStatus === "HADIR" || newStatus === "TERLAMBAT") {
+        setNewStatus("ALPHA");
+      }
+    } else {
+      if (timeVal <= "07:30") {
+        setNewStatus("HADIR");
+      } else {
+        setNewStatus("TERLAMBAT");
+      }
+    }
+  };
 
   useEffect(() => {
     if (isOpen && attendanceId && attendanceId !== "00000000-0000-0000-0000-000000000000") {
@@ -398,7 +413,7 @@ export function AttendanceDetailModal({
                         {checkInTime && (
                           <button
                             type="button"
-                            onClick={() => setCheckInTime("")}
+                            onClick={() => handleCheckInTimeChange("")}
                             className="text-[10px] text-slate-400 hover:text-rose-600"
                           >
                             Kosongkan
@@ -408,9 +423,18 @@ export function AttendanceDetailModal({
                       <input
                         type="time"
                         value={checkInTime}
-                        onChange={(e) => setCheckInTime(e.target.value)}
+                        onChange={(e) => handleCheckInTimeChange(e.target.value)}
                         className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 font-medium"
                       />
+                      {checkInTime ? (
+                        <p className="text-[10px] mt-1 font-medium text-slate-500">
+                          {checkInTime <= "07:30" ? (
+                            <span className="text-emerald-600">⚡ ≤ 07:30 WITA → Status: <b>HADIR</b></span>
+                          ) : (
+                            <span className="text-amber-600">⚡ &gt; 07:30 WITA → Status: <b>TERLAMBAT</b></span>
+                          )}
+                        </p>
+                      ) : null}
                     </div>
 
                     <div>

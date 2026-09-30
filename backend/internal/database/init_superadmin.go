@@ -101,5 +101,40 @@ func (db *DB) EnsureSuperAdminAndSchema(ctx context.Context) error {
 		}
 	}
 
+	// 5. Auto-sync attendance status for all records based on 07:30 WITA threshold (excluding IZIN/SAKIT)
+	syncHadirQuery := `
+		UPDATE attendance
+		SET status = 'HADIR'
+		WHERE check_in IS NOT NULL
+		  AND status = 'TERLAMBAT'
+		  AND (
+		      EXTRACT(HOUR FROM (check_in AT TIME ZONE 'Asia/Makassar')) < 7 
+		      OR (
+		          EXTRACT(HOUR FROM (check_in AT TIME ZONE 'Asia/Makassar')) = 7 
+		          AND EXTRACT(MINUTE FROM (check_in AT TIME ZONE 'Asia/Makassar')) <= 30
+		      )
+		  );
+	`
+	if _, err := db.ExecContext(ctx, syncHadirQuery); err != nil {
+		log.Printf("[InitDB] Warning syncing HADIR status: %v", err)
+	}
+
+	syncTerlambatQuery := `
+		UPDATE attendance
+		SET status = 'TERLAMBAT'
+		WHERE check_in IS NOT NULL
+		  AND status = 'HADIR'
+		  AND (
+		      EXTRACT(HOUR FROM (check_in AT TIME ZONE 'Asia/Makassar')) > 7 
+		      OR (
+		          EXTRACT(HOUR FROM (check_in AT TIME ZONE 'Asia/Makassar')) = 7 
+		          AND EXTRACT(MINUTE FROM (check_in AT TIME ZONE 'Asia/Makassar')) > 30
+		      )
+		  );
+	`
+	if _, err := db.ExecContext(ctx, syncTerlambatQuery); err != nil {
+		log.Printf("[InitDB] Warning syncing TERLAMBAT status: %v", err)
+	}
+
 	return nil
 }

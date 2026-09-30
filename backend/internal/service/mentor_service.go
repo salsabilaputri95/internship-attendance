@@ -151,9 +151,6 @@ func (s *mentorService) CorrectAttendance(ctx context.Context, attendanceID uuid
 	}
 
 	// 3. Apply updates
-	if req.Status != "" {
-		existing.Status = req.Status
-	}
 	if req.Notes != nil {
 		existing.Notes = req.Notes
 	}
@@ -178,6 +175,22 @@ func (s *mentorService) CorrectAttendance(ctx context.Context, attendanceID uuid
 				existing.CheckOut = &parsedCheckOut
 			}
 		}
+	}
+
+	if req.Status == "" || req.Status == "HADIR" || req.Status == "TERLAMBAT" {
+		if existing.CheckIn != nil {
+			witaLoc := time.FixedZone("WITA", 8*3600)
+			cinWITA := existing.CheckIn.In(witaLoc)
+			if cinWITA.Hour() < 7 || (cinWITA.Hour() == 7 && cinWITA.Minute() <= 30) {
+				existing.Status = "HADIR"
+			} else {
+				existing.Status = "TERLAMBAT"
+			}
+		} else if req.Status == "" {
+			existing.Status = "ALPHA"
+		}
+	} else if req.Status != "" {
+		existing.Status = req.Status
 	}
 
 	// 4. Prepare newValue JSON snapshot

@@ -137,9 +137,10 @@ func (s *attendanceService) CheckIn(ctx context.Context, req *CheckInRequest) (*
 
 	// 6. Determine status (Hadir <= 07:30 WITA, Terlambat > 07:30 WITA)
 	now := time.Now()
+	witaLoc := time.FixedZone("WITA", 8*3600)
+	nowWITA := now.In(witaLoc)
 	status := model.StatusHadir
-	// Check against 07:30 threshold
-	if now.Hour() > 7 || (now.Hour() == 7 && now.Minute() > 30) {
+	if nowWITA.Hour() > 7 || (nowWITA.Hour() == 7 && nowWITA.Minute() > 30) {
 		status = model.StatusTerlambat
 	}
 

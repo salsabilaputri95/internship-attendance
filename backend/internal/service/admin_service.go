@@ -197,11 +197,6 @@ func (s *adminService) UpdateAttendance(ctx context.Context, id uuid.UUID, admin
 		targetDate = strings.TrimSpace(*req.AttendanceDate)
 	}
 
-	statusUpper := strings.ToUpper(strings.TrimSpace(req.Status))
-	if statusUpper == "" {
-		statusUpper = string(existing.Status)
-	}
-
 	checkInTime := existing.CheckIn
 	if req.CheckInTime != nil {
 		if strings.TrimSpace(*req.CheckInTime) == "" {
@@ -211,6 +206,21 @@ func (s *adminService) UpdateAttendance(ctx context.Context, id uuid.UUID, admin
 			if err == nil {
 				checkInTime = &t
 			}
+		}
+	}
+
+	statusUpper := strings.ToUpper(strings.TrimSpace(req.Status))
+	if statusUpper == "" || statusUpper == "HADIR" || statusUpper == "TERLAMBAT" {
+		if checkInTime != nil {
+			witaLoc := time.FixedZone("WITA", 8*3600)
+			cinWITA := checkInTime.In(witaLoc)
+			if cinWITA.Hour() < 7 || (cinWITA.Hour() == 7 && cinWITA.Minute() <= 30) {
+				statusUpper = "HADIR"
+			} else {
+				statusUpper = "TERLAMBAT"
+			}
+		} else if statusUpper == "" {
+			statusUpper = "ALPHA"
 		}
 	}
 
