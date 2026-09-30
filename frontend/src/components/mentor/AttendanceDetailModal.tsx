@@ -8,7 +8,6 @@ import {
   MapPin,
   Image as ImageIcon,
   Edit3,
-  History,
   AlertCircle,
   CheckCircle2,
   Send,
@@ -17,18 +16,6 @@ import {
   User,
 } from "lucide-react";
 import { api } from "@/lib/api";
-
-interface CorrectionLog {
-  id: string;
-  attendance_id: string;
-  corrected_by: string;
-  old_value: any;
-  new_value: any;
-  reason: string;
-  created_at: string;
-  mentor_name: string;
-  mentor_email: string;
-}
 
 interface AttendanceDetail {
   id: string;
@@ -51,7 +38,6 @@ interface AttendanceDetail {
   intern_name: string;
   intern_university: string;
   intern_major: string;
-  corrections?: CorrectionLog[];
 }
 
 interface AttendanceDetailModalProps {
@@ -67,7 +53,7 @@ export function AttendanceDetailModal({
   onClose,
   onSuccess,
 }: AttendanceDetailModalProps) {
-  const [tab, setTab] = useState<"detail" | "correct" | "audit">("detail");
+  const [tab, setTab] = useState<"detail" | "correct">("detail");
   const [detail, setDetail] = useState<AttendanceDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -237,17 +223,6 @@ export function AttendanceDetailModal({
             <Edit3 size={13} />
             Koreksi Presensi
           </button>
-          <button
-            onClick={() => setTab("audit")}
-            className={`flex items-center gap-1.5 pb-2 px-3 text-xs font-semibold border-b-2 transition-colors ${
-              tab === "audit"
-                ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            <History size={13} />
-            Audit Trail ({detail?.corrections?.length || 0})
-          </button>
         </div>
 
         {/* Content Area */}
@@ -390,9 +365,8 @@ export function AttendanceDetailModal({
                   <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-3 text-amber-900 text-xs flex items-start gap-2">
                     <AlertCircle size={15} className="text-amber-600 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold text-amber-900">Audit Trail Aktif:</span> Setiap
-                      perubahan data akan dicatat permanen dalam rekam log audit beserta identitas
-                      Anda sebagai mentor penanggung jawab.
+                      <span className="font-semibold text-amber-900">Perhatian:</span> Perubahan
+                      data presensi akan langsung diperbarui pada sistem.
                     </div>
                   </div>
 
@@ -479,7 +453,7 @@ export function AttendanceDetailModal({
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Alasan Koreksi <span className="text-rose-500">* (Wajib untuk Audit Log)</span>
+                      Alasan Perubahan <span className="text-rose-500">*</span>
                     </label>
                     <textarea
                       value={reason}
@@ -498,56 +472,10 @@ export function AttendanceDetailModal({
                       className="py-2 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-all disabled:opacity-50 active:scale-[0.99]"
                     >
                       <Send size={13} />
-                      <span>{submitting ? "Menyimpan Log..." : "Simpan Koreksi & Audit Log"}</span>
+                      <span>{submitting ? "Menyimpan..." : "Simpan Perubahan Presensi"}</span>
                     </button>
                   </div>
                 </form>
-              )}
-
-              {/* TAB 3: AUDIT LOG */}
-              {tab === "audit" && (
-                <div className="space-y-2.5">
-                  {!detail.corrections || detail.corrections.length === 0 ? (
-                    <div className="py-10 text-center text-slate-400 text-xs">
-                      Belum ada catatan koreksi untuk data presensi ini.
-                    </div>
-                  ) : (
-                    detail.corrections.map((log) => (
-                      <div
-                        key={log.id}
-                        className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 text-xs space-y-1.5"
-                      >
-                        <div className="flex items-center justify-between text-slate-500 pb-1.5 border-b border-slate-200/70">
-                          <span className="font-semibold text-slate-800 flex items-center gap-1.5">
-                            <User size={13} className="text-indigo-600" />
-                            {log.mentor_name}
-                          </span>
-                          <span className="text-[10px] font-mono text-slate-400">
-                            {new Date(log.created_at).toLocaleString("id-ID")}
-                          </span>
-                        </div>
-
-                        <div className="text-slate-700">
-                          <span className="text-slate-400 font-medium">Alasan: </span>
-                          <span className="font-semibold text-slate-900">
-                            &ldquo;{log.reason}&rdquo;
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
-                          <div className="bg-white p-2 rounded-lg border border-rose-100">
-                            <span className="text-rose-600 block font-semibold text-[10px]">Status Lama:</span>
-                            <span className="font-medium text-slate-800">{log.old_value?.status || "--"}</span>
-                          </div>
-                          <div className="bg-white p-2 rounded-lg border border-emerald-100">
-                            <span className="text-emerald-600 block font-semibold text-[10px]">Status Baru:</span>
-                            <span className="font-medium text-slate-800">{log.new_value?.status || "--"}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
               )}
             </>
           )}
