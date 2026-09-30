@@ -49,8 +49,31 @@ func (r *adminRepository) GetDashboardStats(ctx context.Context) (*model.AdminDa
 		return nil, fmt.Errorf("failed to count users: %w", err)
 	}
 
-	// 2. Attendance status counts
+	// 2. Attendance status counts including Alpha/Belum Hadir for active interns
 	attQuery := `
+		WITH user_dates AS (
+			SELECT status::text AS status FROM attendance
+
+			UNION ALL
+
+			SELECT 
+				CASE 
+					WHEN d.day < CURRENT_DATE THEN 'ALPHA'
+					ELSE 'BELUM_HADIR'
+				END AS status
+			FROM interns i
+			CROSS JOIN LATERAL (
+				SELECT generate_series(
+					GREATEST(i.start_date, '2026-09-01'::date),
+					LEAST(CURRENT_DATE, i.end_date),
+					'1 day'::interval
+				)::date AS day
+			) d
+			LEFT JOIN attendance a ON (a.intern_id = i.id OR a.user_id = i.user_id) AND a.attendance_date = d.day
+			WHERE i.status = 'active'
+			  AND EXTRACT(DOW FROM d.day) BETWEEN 1 AND 5
+			  AND a.id IS NULL
+		)
 		SELECT 
 			COUNT(*) AS total_attendance,
 			COUNT(*) FILTER (WHERE status = 'HADIR') AS total_hadir,
@@ -59,7 +82,7 @@ func (r *adminRepository) GetDashboardStats(ctx context.Context) (*model.AdminDa
 			COUNT(*) FILTER (WHERE status = 'SAKIT') AS total_sakit,
 			COUNT(*) FILTER (WHERE status = 'ALPHA') AS total_alpha,
 			COUNT(*) FILTER (WHERE status = 'BELUM_HADIR') AS total_belum_hadir
-		FROM attendance
+		FROM user_dates
 	`
 	err = r.db.QueryRowContext(ctx, attQuery).Scan(
 		&stats.TotalAttendance,
@@ -86,8 +109,50 @@ func (r *adminRepository) GetDashboardStats(ctx context.Context) (*model.AdminDa
 
 func (r *adminRepository) GetAllAttendance(ctx context.Context, search, dateStr, startDate, endDate, status, category string, limit, offset int) ([]model.AdminAttendanceItem, int, error) {
 	baseQuery := `
-		FROM attendance a
-		JOIN users u ON COALESCE(a.user_id, (SELECT user_id FROM interns WHERE id = a.intern_id)) = u.id
+		FROM (
+			SELECT 
+				a.id,
+				COALESCE(a.user_id, (SELECT user_id FROM interns WHERE id = a.intern_id)) AS user_id,
+				a.intern_id,
+				a.attendance_date::text AS attendance_date,
+				a.check_in, a.check_in_latitude, a.check_in_longitude, a.check_in_accuracy, a.check_in_distance, a.check_in_photo_url,
+				a.check_out, a.check_out_latitude, a.check_out_longitude, a.check_out_accuracy, a.check_out_distance, a.check_out_photo_url,
+				a.status::text AS status,
+				a.notes,
+				a.created_at,
+				a.updated_at
+			FROM attendance a
+
+			UNION ALL
+
+			SELECT 
+				'00000000-0000-0000-0000-000000000000'::uuid AS id,
+				i.user_id,
+				i.id AS intern_id,
+				d.day::text AS attendance_date,
+				NULL::timestamptz AS check_in, NULL::float8 AS check_in_latitude, NULL::float8 AS check_in_longitude, NULL::float8 AS check_in_accuracy, NULL::float8 AS check_in_distance, NULL::text AS check_in_photo_url,
+				NULL::timestamptz AS check_out, NULL::float8 AS check_out_latitude, NULL::float8 AS check_out_longitude, NULL::float8 AS check_out_accuracy, NULL::float8 AS check_out_distance, NULL::text AS check_out_photo_url,
+				CASE 
+					WHEN d.day < CURRENT_DATE THEN 'ALPHA'
+					ELSE 'BELUM_HADIR'
+				END AS status,
+				NULL::text AS notes,
+				d.day::timestamp AS created_at,
+				d.day::timestamp AS updated_at
+			FROM interns i
+			CROSS JOIN LATERAL (
+				SELECT generate_series(
+					GREATEST(i.start_date, '2026-09-01'::date),
+					LEAST(CURRENT_DATE, i.end_date),
+					'1 day'::interval
+				)::date AS day
+			) d
+			LEFT JOIN attendance a ON (a.intern_id = i.id OR a.user_id = i.user_id) AND a.attendance_date = d.day
+			WHERE i.status = 'active'
+			  AND EXTRACT(DOW FROM d.day) BETWEEN 1 AND 5
+			  AND a.id IS NULL
+		) a
+		JOIN users u ON a.user_id = u.id
 		LEFT JOIN interns i ON i.user_id = u.id
 		WHERE 1=1
 	`
@@ -160,14 +225,14 @@ func (r *adminRepository) GetAllAttendance(ctx context.Context, search, dateStr,
 			END AS category,
 			COALESCE(i.university, '') AS university,
 			COALESCE(i.major, '') AS major,
-			a.attendance_date::text,
+			a.attendance_date,
 			a.check_in, a.check_in_latitude, a.check_in_longitude, a.check_in_accuracy, a.check_in_distance, a.check_in_photo_url,
 			a.check_out, a.check_out_latitude, a.check_out_longitude, a.check_out_accuracy, a.check_out_distance, a.check_out_photo_url,
 			a.status,
 			a.notes,
 			a.created_at,
 			a.updated_at
-	` + baseQuery + ` ORDER BY a.attendance_date DESC, a.created_at DESC`
+	` + baseQuery + ` ORDER BY a.attendance_date DESC, u.name ASC`
 
 	if limit > 0 {
 		selectSQL += fmt.Sprintf(` LIMIT $%d OFFSET $%d`, argIdx, argIdx+1)

@@ -171,7 +171,8 @@ export default function SuperAdminDashboardPage() {
 
   // Handler open edit modal
   const handleOpenEdit = (item: AttendanceRow) => {
-    setModalMode("edit");
+    const isUnrecorded = item.id === "00000000-0000-0000-0000-000000000000";
+    setModalMode(isUnrecorded ? "create" : "edit");
     setEditingItem({
       id: item.id,
       user_id: item.user_id,
@@ -183,7 +184,7 @@ export default function SuperAdminDashboardPage() {
       check_in_distance: item.check_in_distance,
       check_out: item.check_out,
       check_out_distance: item.check_out_distance,
-      status: item.status,
+      status: item.status === "BELUM_HADIR" ? "HADIR" : item.status,
       notes: item.notes,
     });
     setAttendanceModalOpen(true);
@@ -191,12 +192,20 @@ export default function SuperAdminDashboardPage() {
 
   // Handler open detail modal
   const handleOpenDetail = (id: string) => {
+    if (id === "00000000-0000-0000-0000-000000000000") {
+      alert("Peserta berstatus Alpha / Belum Hadir pada tanggal ini, sehingga belum ada rincian GPS atau foto bukti selfie.");
+      return;
+    }
     setSelectedAttendanceId(id);
     setDetailModalOpen(true);
   };
 
   // Handler open delete confirmation modal
   const handleOpenDelete = (item: AttendanceRow) => {
+    if (item.id === "00000000-0000-0000-0000-000000000000") {
+      alert("Rekor ini adalah status Alpha otomatis (belum ada data absensi di database yang perlu dihapus).");
+      return;
+    }
     setItemToDelete({
       id: item.id,
       user_name: item.user_name,

@@ -130,14 +130,22 @@ export function AdminAttendanceModal({
       } else {
         // Create mode defaults
         const today = new Date().toISOString().split("T")[0];
-        setSelectedUserId(usersList.length > 0 ? usersList[0].user_id : "");
-        setAttendanceDate(today);
+        setSelectedUserId(
+          attendanceData?.user_id || (usersList.length > 0 ? usersList[0].user_id : "")
+        );
+        setAttendanceDate(attendanceData?.attendance_date || today);
         setCheckInTime("07:25");
         setCheckOutTime("16:00");
         setDistanceIn("5");
         setDistanceOut("5");
-        setStatus("HADIR");
-        setNotes("");
+        setStatus(
+          attendanceData?.status &&
+            attendanceData.status !== "ALPHA" &&
+            attendanceData.status !== "BELUM_HADIR"
+            ? attendanceData.status
+            : "HADIR"
+        );
+        setNotes(attendanceData?.notes || "");
         setReason("");
       }
     }
@@ -156,11 +164,6 @@ export function AdminAttendanceModal({
 
     if (!attendanceDate) {
       setError("Tanggal absensi wajib diisi.");
-      return;
-    }
-
-    if (mode === "edit" && !reason.trim()) {
-      setError("Alasan koreksi/perubahan wajib diisi untuk rekam jejak audit.");
       return;
     }
 
@@ -436,26 +439,6 @@ export function AdminAttendanceModal({
               className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 resize-none transition-all"
             />
           </div>
-
-          {/* Reason (Required for Edit audit trail) */}
-          {mode === "edit" && (
-            <div>
-              <label className="block text-xs font-bold text-purple-900 mb-1.5">
-                Alasan Koreksi (Audit Log) <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Contoh: Peserta lupa absen pulang karena server offline..."
-                className="w-full bg-purple-50/50 border border-purple-200 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-purple-400 focus:outline-none focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/15 transition-all"
-              />
-              <p className="text-[10px] text-purple-600 mt-1">
-                Alasan ini akan disimpan secara permanen pada log riwayat perubahan absensi.
-              </p>
-            </div>
-          )}
 
           {/* Submit Buttons */}
           <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
